@@ -42,11 +42,13 @@ void QJDRose::paintEvent(QPaintEvent *)
                          width()/2-x,width()/2+y);
     }
 
+    setColorTable();
     for(int j=0;j<25;j++)
     {
         for(int i=0;i<18;i++)
         {
-            QBrush brush(QColor(j*10,j*10,i*10));  //目前颜色渐变
+//            QBrush brush(QColor(j*10,j*10,i*10));  //目前颜色渐变
+            QBrush brush(colorTable[100]);
             double x=(width()/2 -rUnit*j)*cos(kUnit*i);
             double y=(width()/2 -rUnit*j)*sin(kUnit*i);
 
@@ -70,4 +72,59 @@ void QJDRose::paintEvent(QPaintEvent *)
     }
 }
 
+void QJDRose::setColorTable()
+{
+    colorTable.clear();
+    /*----------彩色色表----------*/
+    int i,r,g,b;
+    for (i = 0; i < 32; i++)
+    {
+        r = 0;
+        g = 0;
+        b = 131 + i * 4;
+        colorTable<<qRgb(r,g,b);
+    }
+    for (i = 0; i < 32; i++)
+    {
+        r = 0;
+        g = 4 + i * 4;
+        b = 255;
+        colorTable<<qRgb(r,g,b);
+    }
+    for (i = 1; i < 32; i++)
+    {
+        r = 0;
+        g = 127 + i * 4;
+        b = 255;
+        colorTable<<qRgb(r,g,b);
+    }
+    for (i = 0; i < 32; i++)
+    {
+        r = i * 4;
+        g = 255;
+        b = 255 - i * 4;
+        colorTable<<qRgb(r,g,b);
+    }
+    for (i = 0; i < 32; i++)
+    {
+        r = 128 + i * 4;
+        g = 255;
+        b = 128 - i * 4;
+        colorTable<<qRgb(r,g,b);
+    }
+    for (i = 0; i < 64; i++)
+    {
+        r = 255;
+        g = 255 - i * 4;
+        b = 0;
+        colorTable<<qRgb(r,g,b);
+    }
+    for (i = 0; i < 33; i++)
+    {
+        r = 255 - i * 4;
+        g = 0;
+        b = 0;
+        colorTable<<qRgb(r,g,b);
+    }
 
+}
