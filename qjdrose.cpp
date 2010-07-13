@@ -95,12 +95,12 @@ void QJDRose::paintEvent(QPaintEvent *)
                 toFillPath.closeSubpath();
                 painter.fillPath(toFillPath,brush);
 
-//                QPen pen;
-//                pen.setColor(Qt::blue);
-//                painter.setPen(pen);
-//                painter.drawPath(toFillPath);
-                }
+                //                QPen pen;
+                //                pen.setColor(Qt::blue);
+                //                painter.setPen(pen);
+                //                painter.drawPath(toFillPath);
             }
+        }
         /// 基本框架
         // 半径为长宽最小值的一半
         painter.drawLine(offset-more,radius+offset,
@@ -120,6 +120,36 @@ void QJDRose::paintEvent(QPaintEvent *)
             double y=radius*sin(kUnit*i);
             painter.drawLine(int(radius+offset), int(radius+offset),
                              int(radius+offset+x), int(radius+offset-y));
+
+        }
+        /// 写角度
+        // 位置很难放
+        QString angleText;
+        QPointF writePos;
+        for(int i=0;i<angleLineNumber;i++)
+        {
+            double x=radius*cos(kUnit*i);
+            double y=radius*sin(kUnit*i);
+            int angleNum=360/angleLineNumber*i;
+            angleText=QString::number(angleNum);
+            writePos.setX(radius+offset+x);
+            writePos.setY(radius+offset-y);
+            if((angleNum>0 && angleNum<=90))
+            {
+                painter.drawText(writePos.x()+5,writePos.y(),angleText);
+            }
+            if (angleNum>90 && angleNum<=180)
+            {
+                painter.drawText(writePos.x()-30,writePos.y(),angleText);
+            }
+            if (angleNum>180 && angleNum<=270)
+            {
+                painter.drawText(writePos.x()-30,writePos.y()+10, angleText);  //适当调整
+            }
+            if (angleNum>270 && angleNum<=360)
+            {
+                painter.drawText(writePos.x()+5,writePos.y()+10, angleText);
+            }
         }
     }
 }

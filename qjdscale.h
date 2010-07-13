@@ -3,6 +3,7 @@
 
 #include <QWidget>
 
+// 刻度轴
 class QJDScale : public QWidget
 {
     Q_OBJECT
