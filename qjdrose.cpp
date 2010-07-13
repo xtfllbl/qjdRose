@@ -17,13 +17,9 @@ QJDRose::QJDRose(QWidget *)
 
 void QJDRose::setData()
 {
-    QVector<qint64> originData;
-    QVector<int> convetData;
-    QVector<QVector<int> > colorData;
-
     /// 输入原始数据
-    circleNumber=25;
-    angleLineNumber=36;
+    circleNumber=10;
+    angleLineNumber=18;
 
     originData.resize(circleNumber*angleLineNumber);
     for(int i=0;i<originData.size();i++)
@@ -65,69 +61,66 @@ void QJDRose::paintEvent(QPaintEvent *)
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing); //抗锯齿
     offset=width()/8;  //偏移
+    int more=10;        //适当添加一些余量
+    int radius=width()/3;  //有点太小了的味道
+    double kUnit=(2*PAI/angleLineNumber);  //整个圆除以需要分割的数量，得到每根斜线需要旋转的斜率
+    qreal rUnit=radius*1.0/circleNumber;  //必须使用浮点，否则不准确
+    int rUnitNum=radius/rUnit+1;  //加上最外圈,最外圈不再单独画
+
+    QPointF a;  //圆心
+    a.setX(radius+offset);
+    a.setY(radius+offset);
 
     if(width()<=height())
     {
+        /// 填充网格
+        qreal turnAngleDegree;
+        turnAngleDegree=360*1.0/angleLineNumber;     //旋转角度
+
+        for(int i=0;i<circleNumber;i++)  //圈圈
+        {
+            for(int j=0;j<angleLineNumber;j++) //斜斜
+            {
+                QBrush brush(colorTable[ colorData[i][j] ]);
+                double x=(radius -rUnit*i)*cos(kUnit*j);
+                double y=(radius -rUnit*i)*sin(kUnit*j);
+
+                QPainterPath toFillPath;
+                toFillPath.moveTo(radius+offset, radius+offset);  //移动到圆心
+                toFillPath.lineTo(radius+offset+x,radius+offset-y);     // 调节线段长, 这个有问题
+                /// 此处非常奇怪，起始角度有问题, 旋转角度也许没问题
+                // arcTo ( qreal x, qreal y, qreal width, qreal height, qreal startAngle, qreal sweepLength )
+                toFillPath.arcTo(offset+rUnit*i, offset+rUnit*i, (radius -rUnit*i)*2, (radius -rUnit*i)*2,
+                                 j*turnAngleDegree, turnAngleDegree);  /// 此项注意要改长度和角度
+                toFillPath.closeSubpath();
+                painter.fillPath(toFillPath,brush);
+
+//                QPen pen;
+//                pen.setColor(Qt::blue);
+//                painter.setPen(pen);
+//                painter.drawPath(toFillPath);
+                }
+            }
         /// 基本框架
         // 半径为长宽最小值的一半
-        int radius=width()/3;  //有点太小了的味道
-        painter.drawLine(offset,radius+offset,
-                         radius*2+offset,radius+offset);
-        painter.drawLine(radius+offset,offset,
-                         radius+offset,radius*2+offset);
+        painter.drawLine(offset-more,radius+offset,
+                         radius*2+offset+more,radius+offset);
+        painter.drawLine(radius+offset,offset-more,
+                         radius+offset,radius*2+offset+more);
 
-        QPoint a;
-        a.setX(radius+offset);
-        a.setY(radius+offset);
-        painter.drawEllipse(a,radius,radius);
-
-        // r网格
-        //    int rUnit=width()/2/25;  // 分成25份
-        //    int rUnitNum=width()/2/rUnit;
-        //    for(int i=0;i<rUnitNum;i++)
-        //    {
-        //        painter.drawEllipse(a,rUnit*i,rUnit*i);
-        //    }
-        // 角度网格
-        //    double kUnit=(PAI/18);  //弧度网格,10度一格
-        //    for(int i=0;i<18;i++)
-        //    {
-        //        // 注意坐标系与现实y轴相反,所以理论计算正确，显示错误
-        //        double x=width()/2*cos(kUnit*i);
-        //        double y=width()/2*sin(kUnit*i);
-        //        painter.drawLine(width()/2,width()/2,
-        //                         width()/2+x,width()/2-y);
-        //        painter.drawLine(width()/2,width()/2,
-        //                         width()/2-x,width()/2+y);
-        //    }
-
-        //    for(int j=0;j<25;j++)
-        //    {
-        //        for(int i=0;i<18;i++)
-        //        {
-        ////            QBrush brush(QColor(j*10,j*10,i*10));  //目前颜色渐变
-        //            QBrush brush(colorTable[50]);
-        //            double x=(width()/2 -rUnit*j)*cos(kUnit*i);
-        //            double y=(width()/2 -rUnit*j)*sin(kUnit*i);
-
-        //            QPainterPath testPath1;
-        //            testPath1.moveTo(width()/2, width()/2);
-        //            /// 调节线段长
-        //            testPath1.lineTo(width()/2+x,width()/2-y);
-        //            /// 调节长度
-        //            testPath1.arcTo(0+rUnit*j, 0+rUnit*j, (width()/2 -rUnit*j)*2, (width()/2 -rUnit*j)*2, i*10, 10.0);   //(x,y,width,height,startangle,sweaplength)
-        //            testPath1.lineTo(width()/2,width()/2);
-        //            painter.fillPath(testPath1,brush);
-
-        //            /// --------------------------------------------------------------------------------------------------------------------------- ///
-        //            QPainterPath testPath2;
-        //            testPath2.moveTo(width()/2, width()/2);
-        //            testPath2.lineTo(width()/2-x,width()/2+y);
-        //            testPath2.arcTo(0+rUnit*j, 0+rUnit*j, (width()/2 -rUnit*j)*2, (width()/2 -rUnit*j)*2, 180+i*10, 10.0); //注意起始角度为180
-        //            testPath2.lineTo(width()/2,width()/2);
-        //            painter.fillPath(testPath2,brush);
-        //        }
-        //    }
+        /// 一圈圈
+        for(int i=0; i<rUnitNum; i++)
+        {
+            painter.drawEllipse(a,rUnit*i,rUnit*i);
+        }
+        /// 一条条斜线
+        for(int i=0;i<angleLineNumber;i++)
+        {
+            double x=radius*cos(kUnit*i);
+            double y=radius*sin(kUnit*i);
+            painter.drawLine(int(radius+offset), int(radius+offset),
+                             int(radius+offset+x), int(radius+offset-y));
+        }
     }
 }
 

@@ -10,6 +10,9 @@ public:
 
 private:
     QVector<QRgb> colorTable;
+    QVector<qint64> originData;
+    QVector<int> convetData;
+    QVector<QVector<int> > colorData;
 
     void paintEvent(QPaintEvent *);
     void setColorTable();
