@@ -7,12 +7,21 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    /// 方法一
     scrollArea=new QScrollArea();
     rose=new QJDRose();
     rose->resize(500,500);
-    resize(600,600);
+    resize(510,510);
     scrollArea->setWidget(rose);
-    setCentralWidget(scrollArea);  // 原来的centralWidget呢？
+    setCentralWidget(scrollArea);
+
+    /// 方法二
+//    QHBoxLayout *hLayout=new QHBoxLayout();
+//    rose=new QJDRose();
+//    rose->resize(500,500);
+//    hLayout->addWidget(rose);
+//    resize(510,510);
+//    ui->centralWidget->setLayout(hLayout);
 }
 
 MainWindow::~MainWindow()

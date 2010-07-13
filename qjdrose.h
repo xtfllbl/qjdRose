@@ -13,6 +13,12 @@ private:
 
     void paintEvent(QPaintEvent *);
     void setColorTable();
+    void setData();
+
+
+    int circleNumber;
+    int angleLineNumber;
+    int offset;
 };
 
 #endif // QJDROSE_H
