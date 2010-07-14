@@ -4,6 +4,7 @@
 colorTable::colorTable(QWidget *parent) :
     QWidget(parent)
 {
+    //会依据layout走偏
     setColorTable();
     minNum=100000;
     maxNum=0;
@@ -24,24 +25,25 @@ void colorTable::setRange(int min, int max)
 
 void colorTable::paintEvent(QPaintEvent *)
 {
-
+    /// 需要设置和大小连动
     QPainter painter(this);
+    painter.drawRect(1,1,width()-10,height()-10);
 
     /// 画色表
-    QImage imageTable(30,200,QImage::Format_ARGB32);
     int colorValue;
+    int wid=30;
+    int hei=int(height()/2);
+    QImage imageTable(wid,hei,QImage::Format_ARGB32);
     imageTable.setColorTable(cTable);    //将颜色表附上
 
-    for(int j=0;j<200;j++)          //给每个像素上色
+    for(int j=0;j<hei;j++)          //给每个像素上色
     {
-        for(int i=0;i<30;i++)
+        for(int i=0;i<wid;i++)
         {
-            colorValue=255*j/200;
+            colorValue=255*j/hei;
             imageTable.setPixel(i,j,cTable[colorValue]);
         }
     }
-    painter.drawImage(60,40,imageTable);  // 画上去
-    painter.drawRect(60,40,30,200);        // 包围  drawRect ( int x, int y, int width, int height )
     /// 刻度
     int startPos=0;
     if(maxNum>100000)
@@ -64,14 +66,18 @@ void colorTable::paintEvent(QPaintEvent *)
     {
         startPos=40;
     }
+    painter.drawImage(60,40,imageTable);  // 定起始位置，画上去
+    painter.drawRect(60,40,wid,hei);        // 包围  drawRect ( int x, int y, int width, int height )
 //    qDebug()<<startPos;
     for(int i=0;i<9;i++)
     {
-        painter.drawLine(60,40+200/9*i,70,40+200/9*i);
+        painter.drawLine(60,40+hei/9*i,70,40+hei/9*i);
         int number=maxNum/9*i;
         QString text=QString::number(number);
-        painter.drawText(startPos,40+200/9*i+5,text);   // 依据数字的位数来改变刻度值的起始位置（想办法靠右）
+        painter.drawText(startPos,40+hei/9*i+5,text);   // 依据数字的位数来改变刻度值的起始位置（想办法靠右）
     }
+    QString text=QString::number(maxNum);
+    painter.drawText(startPos,40+hei,text);
 }
 void colorTable::setColorTable()
 {
