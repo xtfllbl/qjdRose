@@ -37,7 +37,7 @@ void QJDRose::setData()
             maxNum=originData[i];
         }
     }
-    cutNum=ceil(maxNum/255.0);
+    cutNum=int(ceil(maxNum/255.0));
     for(int i=0;i<originData.size();i++)
     {
         convetData<<originData[i]/cutNum;
@@ -65,7 +65,7 @@ void QJDRose::paintEvent(QPaintEvent *)
     int radius=width()/3;  //有点太小了的味道
     double kUnit=(2*PAI/angleLineNumber);  //整个圆除以需要分割的数量，得到每根斜线需要旋转的斜率
     qreal rUnit=radius*1.0/circleNumber;  //必须使用浮点，否则不准确
-    int rUnitNum=radius/rUnit+1;  //加上最外圈,最外圈不再单独画
+    int rUnitNum=int(radius/rUnit+1);  //加上最外圈,最外圈不再单独画
 
     QPointF a;  //圆心
     a.setX(radius+offset);
@@ -136,19 +136,19 @@ void QJDRose::paintEvent(QPaintEvent *)
             writePos.setY(radius+offset-y);
             if((angleNum>0 && angleNum<=90))
             {
-                painter.drawText(writePos.x()+5,writePos.y(),angleText);
+                painter.drawText(int(writePos.x()+5), int(writePos.y()), angleText);
             }
             if (angleNum>90 && angleNum<=180)
             {
-                painter.drawText(writePos.x()-30,writePos.y(),angleText);
+                painter.drawText(int(writePos.x()-30), int(writePos.y()), angleText);
             }
             if (angleNum>180 && angleNum<=270)
             {
-                painter.drawText(writePos.x()-30,writePos.y()+10, angleText);  //适当调整
+                painter.drawText(int(writePos.x()-30), int(writePos.y()+10), angleText);  //适当调整
             }
             if (angleNum>270 && angleNum<=360)
             {
-                painter.drawText(writePos.x()+5,writePos.y()+10, angleText);
+                painter.drawText(int(writePos.x()+5), int(writePos.y()+10), angleText);
             }
         }
     }
