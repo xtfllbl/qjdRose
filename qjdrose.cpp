@@ -29,6 +29,7 @@ void QJDRose::setData()
     }
     /// 转换至色表区间
     int maxNum=0;
+    int minNum=1000000;
     int cutNum=0;
     for(int i=0;i<originData.size();i++)
     {
@@ -36,8 +37,14 @@ void QJDRose::setData()
         {
             maxNum=originData[i];
         }
+        if(originData[i]<minNum)
+        {
+            minNum=originData[i];
+        }
     }
-    cutNum=int(ceil(maxNum/255.0));
+    // 设置显示的色表
+    // setRange(minNum,maxNum);
+    cutNum=int(  ceil( (maxNum-minNum)/255.0 )  );
     for(int i=0;i<originData.size();i++)
     {
         convetData<<originData[i]/cutNum;

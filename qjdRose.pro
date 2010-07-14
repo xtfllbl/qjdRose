@@ -13,10 +13,12 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     qjdrose.cpp \
-    qjdscale.cpp
+    qjdscale.cpp \
+    colortable.cpp
 
 HEADERS  += mainwindow.h \
     qjdrose.h \
-    qjdscale.h
+    qjdscale.h \
+    colortable.h
 
 FORMS    += mainwindow.ui

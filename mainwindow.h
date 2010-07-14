@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include "qjdrose.h"
+#include "colortable.h"
 
 namespace Ui {
     class MainWindow;
@@ -16,8 +17,8 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-    QScrollArea *scrollArea;
     QJDRose *rose;
+    colorTable *cTable;
 private:
     Ui::MainWindow *ui;
 

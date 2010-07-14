@@ -7,21 +7,14 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    /// 方法一
-    scrollArea=new QScrollArea();
     rose=new QJDRose();
-    rose->resize(500,500);
-    resize(510,510);
-    scrollArea->setWidget(rose);
-    setCentralWidget(scrollArea);
-
-    /// 方法二
-//    QHBoxLayout *hLayout=new QHBoxLayout();
-//    rose=new QJDRose();
+    cTable=new colorTable();
 //    rose->resize(500,500);
-//    hLayout->addWidget(rose);
 //    resize(510,510);
-//    ui->centralWidget->setLayout(hLayout);
+    QGridLayout *gLayout=new QGridLayout();
+    gLayout->addWidget(cTable,0,0);
+    gLayout->addWidget(rose,0,1);
+    ui->centralWidget->setLayout(gLayout);
 }
 
 MainWindow::~MainWindow()
