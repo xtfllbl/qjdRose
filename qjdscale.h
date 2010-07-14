@@ -11,6 +11,8 @@ class QJDScale : public QWidget
 public:
     explicit QJDScale(QWidget *parent = 0);
 
+private:
+    void paintEvent(QPaintEvent *);
 signals:
 
 public slots:

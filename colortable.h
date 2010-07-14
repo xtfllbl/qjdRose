@@ -8,7 +8,6 @@ class colorTable : public QWidget
     Q_OBJECT
 public:
     explicit colorTable(QWidget *parent = 0);
-    void setRange(int min, int max);
 
 private:
     QVector<QRgb> cTable;
@@ -20,6 +19,7 @@ private:
 signals:
 
 public slots:
+    void setRange(int min, int max);
 
 };
 

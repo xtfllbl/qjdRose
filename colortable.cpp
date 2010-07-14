@@ -1,4 +1,5 @@
 #include "colortable.h"
+#include <QDebug>
 #include <QPainter>
 colorTable::colorTable(QWidget *parent) :
     QWidget(parent)
@@ -12,15 +13,18 @@ colorTable::colorTable(QWidget *parent) :
 
 void colorTable::setRange(int min, int max)
 {
+//  qDebug()<<"setRange();";
     // 知道最大最小
     // min==0,max==255
     // 设置显示对应轴
     minNum=min;
     maxNum=max;
+//    qDebug()<<minNum<<maxNum;
 }
 
 void colorTable::paintEvent(QPaintEvent *)
 {
+
     QPainter painter(this);
 
     /// 画色表
@@ -36,18 +40,38 @@ void colorTable::paintEvent(QPaintEvent *)
             imageTable.setPixel(i,j,cTable[colorValue]);
         }
     }
-    //色表
-    painter.drawImage(40,40,imageTable);
-
-    //包围
-    painter.drawRect(40,40,30,200);
-    return;
+    painter.drawImage(60,40,imageTable);  // 画上去
+    painter.drawRect(60,40,30,200);        // 包围  drawRect ( int x, int y, int width, int height )
     /// 刻度
-//    for(int i=0;i<9;i++)
-//    {
-//        painter->drawLine(40,40+ui->mainToolBar->height()+ui->menuBar->height()+scrollarea->height()/9*i,
-//                          50,40+ui->mainToolBar->height()+ui->menuBar->height()+scrollarea->height()/9*i);
-//    }
+    int startPos=0;
+    if(maxNum>100000)
+    {
+        startPos=0;
+    }
+    if(maxNum>10000 && maxNum<100000)
+    {
+        startPos=10;
+    }
+    if(maxNum>1000 && maxNum<10000)
+    {
+        startPos=20;
+    }
+    if(maxNum>100 && maxNum<1000)
+    {
+        startPos=30;
+    }
+    if(maxNum<100)
+    {
+        startPos=40;
+    }
+//    qDebug()<<startPos;
+    for(int i=0;i<9;i++)
+    {
+        painter.drawLine(60,40+200/9*i,70,40+200/9*i);
+        int number=maxNum/9*i;
+        QString text=QString::number(number);
+        painter.drawText(startPos,40+200/9*i+5,text);   // 依据数字的位数来改变刻度值的起始位置（想办法靠右）
+    }
 }
 void colorTable::setColorTable()
 {

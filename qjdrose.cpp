@@ -6,12 +6,14 @@
 // 在此类中手动做出玫瑰图
 QJDRose::QJDRose(QWidget *)
 {
-    setPalette(Qt::white);
+    setPalette(Qt::white);  // 无用
     circleNumber=0;
     angleLineNumber=0;
     offset=0;
     setColorTable();
     setData();
+    setMinimumSize(200,200);
+    setMaximumSize(400,400);
     //    qDebug()<<width()<<height();
 }
 
@@ -24,13 +26,13 @@ void QJDRose::setData()
     originData.resize(circleNumber*angleLineNumber);
     for(int i=0;i<originData.size();i++)
     {
-        int ir = qrand();
+        int ir = qrand()%100000;  //十万以内随机数
         originData[i]=ir;
     }
     /// 转换至色表区间
-    int maxNum=0;
-    int minNum=1000000;
-    int cutNum=0;
+     maxNum=0;
+     minNum=100000;
+     cutNum=0;
     for(int i=0;i<originData.size();i++)
     {
         if(originData[i]>maxNum)
@@ -42,12 +44,13 @@ void QJDRose::setData()
             minNum=originData[i];
         }
     }
-    // 设置显示的色表
-    // setRange(minNum,maxNum);
+    qDebug()<<"emit"<<minNum<<maxNum;
+    emit sigGetRange(minNum,maxNum);  //发出信号，让colorTable类能接受到,比connect还要早
+
     cutNum=int(  ceil( (maxNum-minNum)/255.0 )  );
     for(int i=0;i<originData.size();i++)
     {
-        convetData<<originData[i]/cutNum;
+        convetData<<int(floor(originData[i]*1.0/(cutNum+1)));   //此数不得大于255，否则程序崩溃
     }
 
     /// 转换至二维数组用于显示
@@ -60,7 +63,7 @@ void QJDRose::setData()
             colorData[i][j]=convetData[j+angleLineNumber*i];  //转化成二维
         }
     }
-    //    qDebug()<<originData<<"\n"<<convetData<<"\n"<<colorData;
+    //    qDebug()<<"setDataOut";
 }
 
 void QJDRose::paintEvent(QPaintEvent *)
@@ -88,10 +91,10 @@ void QJDRose::paintEvent(QPaintEvent *)
         {
             for(int j=0;j<angleLineNumber;j++) //斜斜
             {
-                QBrush brush(colorTable[ colorData[i][j] ]);
+//                qDebug()<<i<<j<<circleNumber<<angleLineNumber;
+                QBrush brush(colorTable[ colorData[i][j] ]);   // there is sth wrong in it
                 double x=(radius -rUnit*i)*cos(kUnit*j);
                 double y=(radius -rUnit*i)*sin(kUnit*j);
-
                 QPainterPath toFillPath;
                 toFillPath.moveTo(radius+offset, radius+offset);  //移动到圆心
                 toFillPath.lineTo(radius+offset+x,radius+offset-y);     // 调节线段长, 这个有问题
@@ -101,7 +104,6 @@ void QJDRose::paintEvent(QPaintEvent *)
                                  j*turnAngleDegree, turnAngleDegree);  /// 此项注意要改长度和角度
                 toFillPath.closeSubpath();
                 painter.fillPath(toFillPath,brush);
-
                 //                QPen pen;
                 //                pen.setColor(Qt::blue);
                 //                painter.setPen(pen);
@@ -215,5 +217,9 @@ void QJDRose::setColorTable()
         b = 0;
         colorTable<<qRgb(r,g,b);
     }
+}
 
+void QJDRose::emitRange()
+{
+    emit sigGetRange(minNum,maxNum);
 }
