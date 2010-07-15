@@ -6,7 +6,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
     rose=new QJDRose();
     cTable=new colorTable();
     rScale=new rightScale();
@@ -47,4 +46,26 @@ void MainWindow::on_actionZoomOut_triggered()  //缩小
     {
         rose->resize(rose->width()-100,rose->height()-100);
     }
+}
+
+void MainWindow::resizeEvent(QResizeEvent *)
+{
+//    int roseWid=rose->width();
+//    int roseHei=rose->height();
+//    if(roseWid<roseHei)
+//    {
+//        roseWid=roseHei;
+//    }
+//    if(roseHei<roseWid)
+//    {
+//        roseHei=roseWid;
+//    }
+
+//    int allWid;
+//    int allHei;
+//    allWid=cTable->width()+rScale->width()+roseWid;
+//    allHei=tScale->height()+roseHei;
+//    qDebug()<<roseWid<<roseHei<<allWid<<allHei;
+//    resize(allWid,allHei);   //一resize，就会降低到最小尺寸。。。为什么会强制缩小？
+//    resize(width()+10,height()+10);  //同样不可取
 }

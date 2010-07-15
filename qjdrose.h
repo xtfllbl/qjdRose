@@ -19,14 +19,15 @@ private:
     int cutNum;
     int length;
 
-    void paintEvent(QPaintEvent *);
-    void setColorTable();
-    void setData();
-
-
     int circleNumber;
     int angleLineNumber;
     int offset;
+
+
+    void paintEvent(QPaintEvent *);
+    void resizeEvent(QResizeEvent *);
+    void setColorTable();
+    void setData();
 signals:
     void sigGetRange(int min,int max);
     void sigGetLength(int len,int offset);

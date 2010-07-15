@@ -2,7 +2,7 @@
 #include <QDebug>
 #include <QPainter>
 colorTable::colorTable(QWidget *parent) :
-    QWidget(parent)
+        QWidget(parent)
 {
     //会依据layout走偏
     setColorTable();
@@ -26,6 +26,7 @@ void colorTable::paintEvent(QPaintEvent *)
     painter.drawRect(1,1,width()-2,height()-2);
 
     /// 画色表
+    // 居中显示比较好
     int colorValue;
     int wid=30;
     int hei=int(height()/2);
@@ -62,19 +63,22 @@ void colorTable::paintEvent(QPaintEvent *)
     {
         startPos=40;
     }
-    painter.drawImage(60,40,imageTable);  // 定起始位置，画上去
-    painter.drawRect(60,40,wid,hei);        // 包围  drawRect ( int x, int y, int width, int height )
-//    qDebug()<<startPos;
+
+    int startHeight=height()/4;         //将色表定在中间位置
+    painter.drawImage(60,startHeight,imageTable);  // 定起始位置，画上去
+    painter.drawRect(60,startHeight,wid,hei);        // 包围  drawRect ( int x, int y, int width, int height )
     for(int i=0;i<9;i++)
     {
-        painter.drawLine(60,40+hei/9*i,70,40+hei/9*i);
+        painter.drawLine(60,startHeight+hei/9*i,70,startHeight+hei/9*i);
         int number=maxNum/9*i;
         QString text=QString::number(number);
-        painter.drawText(startPos,40+hei/9*i+5,text);   // 依据数字的位数来改变刻度值的起始位置（想办法靠右）
+        painter.drawText(startPos,startHeight+hei/9*i+5,text);   // 依据数字的位数来改变刻度值的起始位置（想办法靠右）
     }
     QString text=QString::number(maxNum);
-    painter.drawText(startPos,40+hei,text);
+    painter.drawText(startPos,startHeight+hei,text);
 }
+
+
 void colorTable::setColorTable()
 {
     cTable.clear();

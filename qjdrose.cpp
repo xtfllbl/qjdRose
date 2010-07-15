@@ -12,7 +12,7 @@ QJDRose::QJDRose(QWidget *)
     offset=0;
     setColorTable();
     setData();
-    setMinimumSize(200,200);
+    setMinimumSize(400,400);
     setMaximumSize(2000,2000);  //因为需要扩充，照顾layout
     //    qDebug()<<width()<<height();
 }
@@ -73,14 +73,15 @@ void QJDRose::paintEvent(QPaintEvent *)
     painter.drawRect(1,1,width()-2,height()-2);
 
     length=0;
-    if(width()<=height())  /// 情况分两种,为了外部的坐标轴，这些数据是否要抛出？
-    {
-        length=width();
-    }
-    if(height()<=width())
-    {
-        length=height();
-    }
+//    if(width()<height())  /// 情况分两种,为了外部的坐标轴，这些数据是否要抛出？
+//    {
+//        length=width();
+//    }
+//    if(height()<width())
+//    {
+//        length=height();
+//    }
+    length=width();
 
     painter.setRenderHint(QPainter::Antialiasing); //抗锯齿
     offset=length/8;  //偏移
@@ -231,4 +232,11 @@ void QJDRose::setColorTable()
 void QJDRose::emitRange()
 {
     emit sigGetRange(minNum,maxNum);
+}
+
+void QJDRose::resizeEvent(QResizeEvent *event)
+{
+    /// 这个是增加了，但是主界面没有增加。。。
+//    qDebug()<<"QJDRose::"<<wid<<hei;
+//    QWidget::resizeEvent(event);
 }
