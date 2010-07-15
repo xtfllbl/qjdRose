@@ -66,6 +66,7 @@ void QJDRose::setData()
     //    qDebug()<<"setDataOut";
 }
 
+/// 需要调整一下画法，因为是从顶头开始并且顺时针，默认是逆时针，所以要取负值
 void QJDRose::paintEvent(QPaintEvent *)
 {
 //    qDebug()<<"QJDRose::paintEvent();";
@@ -73,15 +74,18 @@ void QJDRose::paintEvent(QPaintEvent *)
     painter.drawRect(1,1,width()-2,height()-2);
 
     length=0;
-//    if(width()<height())  /// 情况分两种,为了外部的坐标轴，这些数据是否要抛出？
-//    {
-//        length=width();
-//    }
-//    if(height()<width())
-//    {
-//        length=height();
-//    }
-    length=width();
+    if(width()<height())  /// 确保画出来的是圆而且不超出范围
+    {
+        length=width();
+    }
+    if(height()<width())
+    {
+        length=height();
+    }
+    if(width()==height())
+    {
+        length=width();
+    }
 
     painter.setRenderHint(QPainter::Antialiasing); //抗锯齿
     offset=length/8;  //偏移
@@ -234,9 +238,18 @@ void QJDRose::emitRange()
     emit sigGetRange(minNum,maxNum);
 }
 
-void QJDRose::resizeEvent(QResizeEvent *event)
+void QJDRose::resizeEvent(QResizeEvent *)
 {
     /// 这个是增加了，但是主界面没有增加。。。
-//    qDebug()<<"QJDRose::"<<wid<<hei;
-//    QWidget::resizeEvent(event);
+    int roseWid=width();
+    int roseHei=height();
+    if(roseWid<roseHei)
+    {
+        roseHei=roseWid;
+    }
+    if(roseHei<roseWid)
+    {
+        roseWid=roseHei;
+    }
+    resize(roseWid,roseHei);
 }

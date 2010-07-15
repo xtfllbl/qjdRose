@@ -50,6 +50,7 @@ void MainWindow::on_actionZoomOut_triggered()  //缩小
 
 void MainWindow::resizeEvent(QResizeEvent *)
 {
+    /// resize含有诸多问题，无法实现
 //    int roseWid=rose->width();
 //    int roseHei=rose->height();
 //    if(roseWid<roseHei)
@@ -68,4 +69,5 @@ void MainWindow::resizeEvent(QResizeEvent *)
 //    qDebug()<<roseWid<<roseHei<<allWid<<allHei;
 //    resize(allWid,allHei);   //一resize，就会降低到最小尺寸。。。为什么会强制缩小？
 //    resize(width()+10,height()+10);  //同样不可取
+
 }
