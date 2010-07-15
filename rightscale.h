@@ -13,12 +13,17 @@ public:
 
     int length;
     int offset;
+    int mouseY;
+    float diameter;
+
 private:
     void paintEvent(QPaintEvent *);
+    void paintPosLine(QPainter *painter);
 signals:
 
 public slots:
     void setLength(int len,int off);
+    void setPosLine(int y);
 };
 
 #endif // QJDSCALE_H

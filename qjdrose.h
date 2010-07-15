@@ -26,11 +26,15 @@ private:
 
     void paintEvent(QPaintEvent *);
     void resizeEvent(QResizeEvent *);
+    void mouseMoveEvent(QMouseEvent *);
     void setColorTable();
     void setData();
 signals:
     void sigGetRange(int min,int max);
     void sigGetLength(int len,int offset);
+    void sigCurrentMousePos(int x,int y);
+    void sigCurrentMousePosX(int x);
+    void sigCurrentMousePosY(int y);
 };
 
 #endif // QJDROSE_H

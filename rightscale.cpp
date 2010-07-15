@@ -15,28 +15,55 @@ void rightScale::paintEvent(QPaintEvent *)
     QPainter painter(this);
     painter.drawRect(1,1,width()-2,height()-2);
 
-    float radius=(length*1.0/3)*2;   //使用float，最大限度减少误差
-    painter.drawLine(5, offset, 5, int(radius+offset));  // 对应圆圈的高度
+     diameter=(length*1.0/3)*2;   //使用float，最大限度减少误差
+    painter.drawLine(5, offset, 5, int(diameter+offset));  // 对应圆圈的高度
 
     /// 刻度
-    float longLine=radius/6;
+    float longLine=diameter/6;
     for(int i=0;i<6;i++)
     {
         painter.drawLine(5, int(longLine*i+offset), 10, int(longLine*i+offset));
     }
-    painter.drawLine(5, int(radius+offset), 10, int(radius+offset));  //手动保证最后一条线
+    painter.drawLine(5, int(diameter+offset), 10, int(diameter+offset));  //手动保证最后一条线
 
-    float shortLine=radius/30;
+    float shortLine=diameter/30;
     for(int i=0;i<30;i++)
     {
         painter.drawLine(5, int(shortLine*i+offset), 7, int(shortLine*i+offset));
     }
+
+    paintPosLine(&painter);
 }
 
 void rightScale::setLength(int len,int off)
 {
-//    qDebug()<<"QJDScale::setLength();"<<len;
     length=len;
     offset=off;
     update();
+}
+
+void rightScale::setPosLine(int y)
+{
+    if(y>diameter+offset)
+    {
+        mouseY=int(diameter+offset);
+    }
+    if(y<offset)
+    {
+        mouseY=offset;
+    }
+    if(y>=offset && y<=(diameter+offset))
+    {
+        mouseY=y;
+    }
+    update();
+}
+
+void rightScale::paintPosLine(QPainter *painter)
+{
+    QPen pen;
+    pen.setColor(Qt::red);
+    pen.setWidth(3);
+    painter->setPen(pen);
+    painter->drawLine(5,mouseY,15,mouseY);
 }

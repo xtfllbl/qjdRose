@@ -6,7 +6,7 @@
 // 在此类中手动做出玫瑰图
 QJDRose::QJDRose(QWidget *)
 {
-//    setMouseTracking(true);
+    //    setMouseTracking(true);
     setPalette(Qt::white);  // 无用
     circleNumber=0;
     angleLineNumber=0;
@@ -22,7 +22,7 @@ void QJDRose::setData()
 {
     /// 输入原始数据
     circleNumber=10;
-    angleLineNumber=18;
+    angleLineNumber=16;
 
     originData.resize(circleNumber*angleLineNumber);
     for(int i=0;i<originData.size();i++)
@@ -70,7 +70,7 @@ void QJDRose::setData()
 /// 需要调整一下画法，因为是从顶头开始并且顺时针，默认是逆时针，所以要取负值
 void QJDRose::paintEvent(QPaintEvent *)
 {
-//    qDebug()<<"QJDRose::paintEvent();";
+    //    qDebug()<<"QJDRose::paintEvent();";
     QPainter painter(this);
     painter.drawRect(1,1,width()-2,height()-2);
 
@@ -91,7 +91,8 @@ void QJDRose::paintEvent(QPaintEvent *)
     painter.setRenderHint(QPainter::Antialiasing); //抗锯齿
     offset=length/8;  //偏移
     int more=10;        //适当添加一些余量
-    int radius=length/3;  //有点太小了的味道
+    int radius=length/3;
+//    qDebug()<<radius;
     double kUnit=(2*PAI/angleLineNumber);  //整个圆除以需要分割的数量，得到每根斜线需要旋转的斜率
     qreal rUnit=radius*1.0/circleNumber;  //必须使用浮点，否则不准确
     int rUnitNum=int(radius/rUnit+1);  //加上最外圈,最外圈不再单独画
@@ -104,29 +105,74 @@ void QJDRose::paintEvent(QPaintEvent *)
 
     /// 填充网格
     qreal turnAngleDegree;
-    turnAngleDegree=360*1.0/angleLineNumber;     //旋转角度
 
+    /// 从0度逆时针绘图
+//    turnAngleDegree=360*1.0/angleLineNumber;     //逆时针
+//    for(int i=0;i<circleNumber;i++)  //圈圈
+//    {
+//        for(int j=0;j<angleLineNumber;j++) //斜斜
+//        {
+//            QBrush brush(colorTable[ colorData[i][j] ]);   // colorData must <=255, otherwise pro will broken
+//                        double x=(radius -rUnit*i)*cos(kUnit*j);
+//                        double y=(radius -rUnit*i)*sin(kUnit*j);
+//                        QPainterPath toFillPath;
+//                        toFillPath.moveTo(radius+offset, radius+offset);  //移动到圆心
+//                        toFillPath.lineTo(radius+offset+x,radius+offset-y);     // 调节线段长
+//                        // arcTo ( qreal x, qreal y, qreal width, qreal height, qreal startAngle, qreal sweepLength )
+//                        toFillPath.arcTo(offset+rUnit*i, offset+rUnit*i, (radius -rUnit*i)*2, (radius -rUnit*i)*2,
+//                                         j*turnAngleDegree, turnAngleDegree);  /// 此项注意要改长度和角度
+//                        toFillPath.closeSubpath();
+//                        painter.fillPath(toFillPath,brush);
+//        }
+//    }
+
+    /// 从0度顺时针绘图
+    //    turnAngleDegree=-360*1.0/angleLineNumber;     //顺时针
+    //    for(int i=0;i<circleNumber;i++)  //圈圈
+    //    {
+    //        for(int j=0;j<angleLineNumber;j++) //斜斜
+    //        {
+    //            QBrush brush(colorTable[ colorData[i][j] ]);   // colorData must <=255, otherwise pro will broken
+    //            double x=(radius -rUnit*i)*cos(kUnit*j);
+    //            double y=(radius -rUnit*i)*sin(kUnit*j);
+    //            QPainterPath toFillPath;
+    //            toFillPath.moveTo(radius+offset, radius+offset);  //移动到圆心
+    //            toFillPath.lineTo(radius+offset+x,radius+offset+y);     // 调节线段长
+    //            // arcTo ( qreal x, qreal y, qreal width, qreal height, qreal startAngle, qreal sweepLength )
+    //            toFillPath.arcTo(offset+rUnit*i, offset+rUnit*i, (radius -rUnit*i)*2, (radius -rUnit*i)*2,
+    //                             j*turnAngleDegree, turnAngleDegree);  /// 此项注意要改长度和角度
+    //            toFillPath.closeSubpath();
+    //            painter.fillPath(toFillPath,brush);
+    //        }
+    //    }
+
+    /// 从0度顺时针绘图,success
+    turnAngleDegree=-360*1.0/angleLineNumber;     //顺时针
     for(int i=0;i<circleNumber;i++)  //圈圈
     {
         for(int j=0;j<angleLineNumber;j++) //斜斜
         {
             QBrush brush(colorTable[ colorData[i][j] ]);   // colorData must <=255, otherwise pro will broken
-
-            /// 绘图路径需要重新改变,计算方法需要重写
-            double x=(radius -rUnit*i)*cos(kUnit*j);
-            double y=(radius -rUnit*i)*sin(kUnit*j);
+            double x=(radius -rUnit*i)*cos(PAI/2+kUnit*j);
+            double y=(radius -rUnit*i)*sin(PAI/2+kUnit*j);
+            x=-x;  //x倒一下, y不要倒
+            y=-y;
             QPainterPath toFillPath;
             toFillPath.moveTo(radius+offset, radius+offset);  //移动到圆心
-            toFillPath.lineTo(radius+offset+x,radius+offset-y);     // 调节线段长
-            // arcTo ( qreal x, qreal y, qreal width, qreal height, qreal startAngle, qreal sweepLength )
+            toFillPath.lineTo(radius+offset+x,radius+offset+y);     // 调节线段长
+            /// arcTo ( qreal x, qreal y, qreal width, qreal height, qreal startAngle, qreal sweepLength )
             toFillPath.arcTo(offset+rUnit*i, offset+rUnit*i, (radius -rUnit*i)*2, (radius -rUnit*i)*2,
-                             j*turnAngleDegree, turnAngleDegree);  /// 此项注意要改长度和角度
+                             j*turnAngleDegree+90, turnAngleDegree);  /// 此项注意要改长度和角度
             toFillPath.closeSubpath();
             painter.fillPath(toFillPath,brush);
         }
     }
     /// 基本框架
     // 半径为长宽最小值的一半
+    QPen pen;
+    pen.setColor(Qt::black);
+    painter.setPen(pen);
+
     painter.drawLine(offset-more,radius+offset,
                      radius*2+offset+more,radius+offset);
     painter.drawLine(radius+offset,offset-more,
@@ -137,11 +183,11 @@ void QJDRose::paintEvent(QPaintEvent *)
     {
         painter.drawEllipse(a,rUnit*i,rUnit*i);
     }
-    /// 一条条斜线
+    /// 一条条斜线,需要改变
     for(int i=0;i<angleLineNumber;i++)
     {
-        double x=radius*cos(kUnit*i);
-        double y=radius*sin(kUnit*i);
+        double x=radius*cos(PAI/2+kUnit*i);
+        double y=radius*sin(PAI/2+kUnit*i);
         painter.drawLine(int(radius+offset), int(radius+offset),
                          int(radius+offset+x), int(radius+offset-y));
 
@@ -150,29 +196,37 @@ void QJDRose::paintEvent(QPaintEvent *)
     // 位置很难放
     QString angleText;
     QPointF writePos;
+    /// 应当从90度开始写
     for(int i=0;i<angleLineNumber;i++)
     {
-        double x=radius*cos(kUnit*i);
-        double y=radius*sin(kUnit*i);
-        int angleNum=360/angleLineNumber*i;
-        angleText=QString::number(angleNum);
+        double x=radius*cos(PAI/2+kUnit*i);
+        double y=radius*sin(PAI/2+kUnit*i);
+        x=-x;
+        y=-y;
+
+        float angleNum=360*1.0/angleLineNumber*i;  //先准确计算，然后模糊显示
+        int showNum=int(angleNum);
+        angleText=QString::number(showNum);
         writePos.setX(radius+offset+x);
-        writePos.setY(radius+offset-y);
+        writePos.setY(radius+offset+y);
+
+        QString zero="0";
+        painter.drawText(radius+offset+2, offset-2, zero);
         if((angleNum>0 && angleNum<=90))
         {
-            painter.drawText(int(writePos.x()+5), int(writePos.y()), angleText);
+            painter.drawText(int(writePos.x()+3), int(writePos.y()), angleText);
         }
         if (angleNum>90 && angleNum<=180)
         {
-            painter.drawText(int(writePos.x()-30), int(writePos.y()), angleText);
+            painter.drawText(int(writePos.x()), int(writePos.y()+15), angleText);
         }
         if (angleNum>180 && angleNum<=270)
         {
-            painter.drawText(int(writePos.x()-30), int(writePos.y()+10), angleText);  //适当调整
+            painter.drawText(int(writePos.x()-27), int(writePos.y()+15), angleText);  //适当调整
         }
         if (angleNum>270 && angleNum<=360)
         {
-            painter.drawText(int(writePos.x()+5), int(writePos.y()+10), angleText);
+            painter.drawText(int(writePos.x()-30), int(writePos.y()), angleText);
         }
     }
 
@@ -253,4 +307,14 @@ void QJDRose::resizeEvent(QResizeEvent *)
         roseWid=roseHei;
     }
     resize(roseWid,roseHei);
+}
+
+
+void QJDRose::mouseMoveEvent(QMouseEvent *event)
+{
+//    qDebug()<<event->pos();  //本widget内，不要map系列函数
+    // 发出信号，另外两个widget接受信号，画条短线，不用换算
+    emit sigCurrentMousePos(event->pos().x(),event->pos().y());
+    emit sigCurrentMousePosX(event->pos().x());
+    emit sigCurrentMousePosY(event->pos().y());
 }
