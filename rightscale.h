@@ -5,18 +5,20 @@
 
 // 刻度轴
 // 好好规划下，如何做刻度轴
-class QJDScale : public QWidget
+class rightScale : public QWidget
 {
     Q_OBJECT
 public:
-    explicit QJDScale(QWidget *parent = 0);
+    explicit rightScale(QWidget *parent = 0);
 
+    int length;
+    int offset;
 private:
     void paintEvent(QPaintEvent *);
 signals:
 
 public slots:
-
+    void setLength(int len,int off);
 };
 
 #endif // QJDSCALE_H

@@ -17,6 +17,7 @@ private:
     int maxNum;
     int minNum;
     int cutNum;
+    int length;
 
     void paintEvent(QPaintEvent *);
     void setColorTable();
@@ -28,6 +29,7 @@ private:
     int offset;
 signals:
     void sigGetRange(int min,int max);
+    void sigGetLength(int len,int offset);
 };
 
 #endif // QJDROSE_H

@@ -14,20 +14,16 @@ colorTable::colorTable(QWidget *parent) :
 
 void colorTable::setRange(int min, int max)
 {
-//  qDebug()<<"setRange();";
-    // 知道最大最小
     // min==0,max==255
-    // 设置显示对应轴
     minNum=min;
     maxNum=max;
-//    qDebug()<<minNum<<maxNum;
 }
 
 void colorTable::paintEvent(QPaintEvent *)
 {
     /// 需要设置和大小连动
     QPainter painter(this);
-    painter.drawRect(1,1,width()-10,height()-10);
+    painter.drawRect(1,1,width()-2,height()-2);
 
     /// 画色表
     int colorValue;
@@ -46,7 +42,7 @@ void colorTable::paintEvent(QPaintEvent *)
     }
     /// 刻度
     int startPos=0;
-    if(maxNum>100000)
+    if(maxNum>100000)  //这里将存在着一定空隙，不太美观
     {
         startPos=0;
     }

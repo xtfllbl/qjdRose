@@ -70,10 +70,10 @@ void QJDRose::paintEvent(QPaintEvent *)
 {
 //    qDebug()<<"QJDRose::paintEvent();";
     QPainter painter(this);
-    painter.drawRect(1,1,width()-10,height()-10);
+    painter.drawRect(1,1,width()-2,height()-2);
 
-    int length=0;
-    if(width()<=height())  //情况分两种
+    length=0;
+    if(width()<=height())  /// 情况分两种,为了外部的坐标轴，这些数据是否要抛出？
     {
         length=width();
     }
@@ -89,6 +89,8 @@ void QJDRose::paintEvent(QPaintEvent *)
     double kUnit=(2*PAI/angleLineNumber);  //整个圆除以需要分割的数量，得到每根斜线需要旋转的斜率
     qreal rUnit=radius*1.0/circleNumber;  //必须使用浮点，否则不准确
     int rUnitNum=int(radius/rUnit+1);  //加上最外圈,最外圈不再单独画
+
+    emit sigGetLength(length,offset);  /// 发送相关信息
 
     QPointF a;  //圆心
     a.setX(radius+offset);

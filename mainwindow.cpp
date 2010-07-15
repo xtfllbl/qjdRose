@@ -9,16 +9,23 @@ MainWindow::MainWindow(QWidget *parent) :
 
     rose=new QJDRose();
     cTable=new colorTable();
-    scale=new QJDScale();
-    if(connect(rose,SIGNAL(sigGetRange(int,int)),cTable,SLOT(setRange(int,int))))
-//        qDebug()<<"connect";   // 把数据连接上
+    rScale=new rightScale();
+    tScale=new topScale();
+    connect(rose,SIGNAL(sigGetRange(int,int)),cTable,SLOT(setRange(int,int)));
+    connect(rose,SIGNAL(sigGetLength(int,int)),rScale,SLOT(setLength(int,int)));
+    connect(rose,SIGNAL(sigGetLength(int,int)),tScale,SLOT(setLength(int,int)));
     rose->emitRange();  //链接之后发送信号
+
+    // 进行布局
     QGridLayout *gLayout=new QGridLayout();
-    gLayout->addWidget(cTable,0,0);
-    gLayout->addWidget(scale,0,1);
-    gLayout->addWidget(rose,0,2);
+    gLayout->addWidget(tScale,0,1);
+    gLayout->addWidget(rScale,1,0);
+    gLayout->addWidget(rose,1,1);
+    QHBoxLayout *hLayout=new QHBoxLayout();
+    hLayout->addWidget(cTable);
+    hLayout->addLayout(gLayout);
 //    qDebug()<<cTable->size()<<scale->size()<<rose->size();  // 640*480??
-    ui->centralWidget->setLayout(gLayout);  //设置layout
+    ui->centralWidget->setLayout(hLayout);  //设置layout
     setCentralWidget(ui->centralWidget);  //设置显示
 }
 

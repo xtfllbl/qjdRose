@@ -4,7 +4,8 @@
 #include <QMainWindow>
 #include "qjdrose.h"
 #include "colortable.h"
-#include "qjdscale.h"
+#include "rightscale.h"
+#include "topscale.h"
 
 namespace Ui {
     class MainWindow;
@@ -19,7 +20,8 @@ public:
     ~MainWindow();
 
     QJDRose *rose;
-    QJDScale *scale;
+    rightScale *rScale;
+    topScale *tScale;
     colorTable *cTable;
 private:
     Ui::MainWindow *ui;
