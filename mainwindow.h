@@ -27,6 +27,7 @@ private:
     Ui::MainWindow *ui;
 
     void resizeEvent(QResizeEvent *);
+    void mouseMoveEvent(QMouseEvent *);
 private slots:
     void on_actionZoomOut_triggered();
     void on_actionZoomIn_triggered();

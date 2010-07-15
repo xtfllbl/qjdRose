@@ -10,6 +10,11 @@ MainWindow::MainWindow(QWidget *parent) :
     cTable=new colorTable();
     rScale=new rightScale();
     tScale=new topScale();
+
+    rose->setMouseTracking(true);
+    ui->centralWidget->setMouseTracking(true);
+    setMouseTracking(true);
+
     connect(rose,SIGNAL(sigGetRange(int,int)),cTable,SLOT(setRange(int,int)));
     connect(rose,SIGNAL(sigGetLength(int,int)),rScale,SLOT(setLength(int,int)));
     connect(rose,SIGNAL(sigGetLength(int,int)),tScale,SLOT(setLength(int,int)));
@@ -23,7 +28,6 @@ MainWindow::MainWindow(QWidget *parent) :
     QHBoxLayout *hLayout=new QHBoxLayout();
     hLayout->addWidget(cTable);
     hLayout->addLayout(gLayout);
-//    qDebug()<<cTable->size()<<scale->size()<<rose->size();  // 640*480??
     ui->centralWidget->setLayout(hLayout);  //设置layout
     setCentralWidget(ui->centralWidget);  //设置显示
 }
@@ -69,5 +73,9 @@ void MainWindow::resizeEvent(QResizeEvent *)
 //    qDebug()<<roseWid<<roseHei<<allWid<<allHei;
 //    resize(allWid,allHei);   //一resize，就会降低到最小尺寸。。。为什么会强制缩小？
 //    resize(width()+10,height()+10);  //同样不可取
+}
 
+void MainWindow::mouseMoveEvent(QMouseEvent *event)
+{
+//    qDebug()<<event->pos();
 }

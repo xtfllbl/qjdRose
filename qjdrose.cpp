@@ -6,6 +6,7 @@
 // 在此类中手动做出玫瑰图
 QJDRose::QJDRose(QWidget *)
 {
+//    setMouseTracking(true);
     setPalette(Qt::white);  // 无用
     circleNumber=0;
     angleLineNumber=0;
@@ -109,14 +110,14 @@ void QJDRose::paintEvent(QPaintEvent *)
     {
         for(int j=0;j<angleLineNumber;j++) //斜斜
         {
-            //                qDebug()<<i<<j<<circleNumber<<angleLineNumber;
-            QBrush brush(colorTable[ colorData[i][j] ]);   // there is sth wrong in it
+            QBrush brush(colorTable[ colorData[i][j] ]);   // colorData must <=255, otherwise pro will broken
+
+            /// 绘图路径需要重新改变,计算方法需要重写
             double x=(radius -rUnit*i)*cos(kUnit*j);
             double y=(radius -rUnit*i)*sin(kUnit*j);
             QPainterPath toFillPath;
             toFillPath.moveTo(radius+offset, radius+offset);  //移动到圆心
-            toFillPath.lineTo(radius+offset+x,radius+offset-y);     // 调节线段长, 这个有问题
-            /// 此处非常奇怪，起始角度有问题, 旋转角度也许没问题
+            toFillPath.lineTo(radius+offset+x,radius+offset-y);     // 调节线段长
             // arcTo ( qreal x, qreal y, qreal width, qreal height, qreal startAngle, qreal sweepLength )
             toFillPath.arcTo(offset+rUnit*i, offset+rUnit*i, (radius -rUnit*i)*2, (radius -rUnit*i)*2,
                              j*turnAngleDegree, turnAngleDegree);  /// 此项注意要改长度和角度
