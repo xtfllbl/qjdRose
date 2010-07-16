@@ -43,7 +43,9 @@ MainWindow::~MainWindow()
 void MainWindow::on_actionZoomIn_triggered()  //放大
 {
     //    qDebug()<<rose->width()<<rose->height();
+    rose->getCurrentPosData();
     rose->resize(rose->width()+100,rose->height()+100);
+//    rose->getCurrentPosData();  //竟然没有变化，稍后找你算帐
 }
 
 void MainWindow::on_actionZoomOut_triggered()  //缩小
