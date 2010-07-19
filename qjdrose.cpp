@@ -16,6 +16,29 @@ QJDRose::QJDRose(QWidget *)
     setMinimumSize(400,400);
     setMaximumSize(2000,2000);  //因为需要扩充，照顾layout
     //    qDebug()<<width()<<height();
+    setOaData();
+}
+
+void QJDRose::setOaData()
+{
+    QFile file;
+    file.setFileName("/home/xtf/gqx-all-new.oa");
+    if(!file.open(QFile::ReadOnly))
+        qDebug()<<"open failed";
+    qint64 fileSize;
+    fileSize=file.size();
+    qint64 oaNum;
+    oaNum=(file.size()-200)/20;
+    qDebug()<<oaNum;
+    QDataStream in(&file);
+    in.setByteOrder(QDataStream::LittleEndian);   //使用readRawData时可无视
+    in.skipRawData(200);
+    for(int i=0;i<10;i++)
+    {
+//        in.readRawData((char *)&oa,20);
+        in>>oa;  // must use qt4.5, the higher will have sth wrong
+        qDebug()<<"oa:: "<<oa.idx<<oa.cx<<oa.cy<<oa.offset<<oa.azimuth;
+    }
 }
 
 void QJDRose::setData()
@@ -90,8 +113,8 @@ void QJDRose::paintEvent(QPaintEvent *)
     offset=length/8;  //偏移
     int more=10;        //适当添加一些余量
     radius=length/3;
-     kUnit=(2*PAI/angleLineNumber);  //整个圆除以需要分割的数量，得到每根斜线需要旋转的斜率
-    qreal rUnit=radius*1.0/circleNumber;  //必须使用浮点，否则不准确
+    kUnit=(2*PAI/angleLineNumber);  //整个圆除以需要分割的数量，得到每根斜线需要旋转的斜率
+    rUnit=radius*1.0/circleNumber;  //必须使用浮点，否则不准确
     int rUnitNum=int(radius/rUnit+1);  //加上最外圈,最外圈不再单独画
 
     emit sigGetLength(length,offset);  /// 发送相关信息
@@ -100,8 +123,6 @@ void QJDRose::paintEvent(QPaintEvent *)
     circleMiddle.setY(radius+offset);
 
     /// 填充网格
-    qreal turnAngleDegree;
-
     /// 从0度顺时针绘图,success
     /// 在此，需要把所有的坐标保存下来，用于鼠标操作
     turnAngleDegree=-360*1.0/angleLineNumber;     //顺时针
@@ -310,6 +331,8 @@ void QJDRose::mouseMoveEvent(QMouseEvent *event)
             // 记录i和i+1的数据，然后画出来
             outerCircle=radiusData[i];
             innerCircle=radiusData[i+1];
+            outerCircleID=i;
+            innerCircleID=i+1;
         }
     }
     //圆心部分,success
@@ -318,6 +341,8 @@ void QJDRose::mouseMoveEvent(QMouseEvent *event)
 //        qDebug()<<"in";
         outerCircle=minRediusData;
         innerCircle=0;
+        //outerCircleID,innerCircleID待定
+
     }
 
 
@@ -367,6 +392,8 @@ void QJDRose::mouseMoveEvent(QMouseEvent *event)
             {
                 angleLine1=i-1;
                 angleLine2=i;
+                angleLine1ID=i-1;
+                angleLine2ID=i;
                 qDebug()<<angleLine1<<angleLine2;
                 break;
             }
@@ -380,6 +407,8 @@ void QJDRose::mouseMoveEvent(QMouseEvent *event)
             {
                 angleLine1=i-1;
                 angleLine2=i;
+                angleLine1ID=i-1;
+                angleLine2ID=i;
                 break;
             }
         }
@@ -392,6 +421,8 @@ void QJDRose::mouseMoveEvent(QMouseEvent *event)
             {
                 angleLine1=i-1;
                 angleLine2=i;
+                angleLine1ID=i-1;
+                angleLine2ID=i;
                 break;
             }
         }
@@ -406,6 +437,8 @@ void QJDRose::mouseMoveEvent(QMouseEvent *event)
             {
                 angleLine1=i-1;
                 angleLine2=i;
+                angleLine1ID=i-1;
+                angleLine2ID=i;
                 break;
             }
         }
@@ -449,4 +482,19 @@ void QJDRose::paintCurrentUnit(QPainter *painter)
     pen2.setColor(Qt::black);
     pen2.setWidth(5);
     painter->setPen(pen2);
+    // 显示所在处的两段线段
+    painter->drawLine(int(radius+offset-innerCircle*cos(PAI/2+kUnit*angleLine1)), int(radius+offset-innerCircle*sin(PAI/2+kUnit*angleLine1)),
+                     int(radius+offset-outerCircle*cos(PAI/2+kUnit*angleLine1)), int(radius+offset-outerCircle*sin(PAI/2+kUnit*angleLine1)));
+    painter->drawLine(int(radius+offset-innerCircle*cos(PAI/2+kUnit*angleLine2)), int(radius+offset-innerCircle*sin(PAI/2+kUnit*angleLine2)),
+                      int(radius+offset-outerCircle*cos(PAI/2+kUnit*angleLine2)), int(radius+offset-outerCircle*sin(PAI/2+kUnit*angleLine2)));
+    // 显示所在处的两段弧
+    //void QPainter::drawArc( int x, int y, int width, int height, int startAngle, int spanAngle )
+    //outerCircle, angleLine1
+    painter->drawArc( offset+rUnit*outerCircleID, offset+rUnit*outerCircleID,
+                      (radius -rUnit*outerCircleID)*2, (radius -rUnit*outerCircleID)*2,
+                      angleLine1ID*turnAngleDegree+90, turnAngleDegree);   /// still not right
+    //innerCircle, angleLine2
+    painter->drawArc( offset+rUnit*innerCircleID, offset+rUnit*innerCircleID,
+                      (radius -rUnit*innerCircleID)*2, (radius -rUnit*innerCircleID)*2,
+                      angleLine2ID*turnAngleDegree+90, turnAngleDegree);
 }

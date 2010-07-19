@@ -2,6 +2,8 @@
 #define QJDROSE_H
 #include <QtGui>
 #include "colortable.h"
+#include "qjdobservationattribute.h"
+
 class QJDRose:public QWidget
 {
     Q_OBJECT
@@ -11,8 +13,12 @@ public:
     void getCurrentPosData();
 
 private:
+    QJDObservationAttribute oa;
     int radius;
     double kUnit;
+    qreal rUnit;
+    qreal turnAngleDegree;
+
     QVector<QRgb> colorTable;
     QVector<qint64> originData;
     QVector<int> convetData;
@@ -42,10 +48,14 @@ private:
 
     double mouseRadius;
     int outerCircle;
+    int outerCircleID;
     int innerCircle;
+    int innerCircleID;
 
     int angleLine1;
+    int angleLine1ID;
     int angleLine2;
+    int angleLine2ID;
 
     void paintEvent(QPaintEvent *);
     void paintCurrentUnit(QPainter *painter);
@@ -54,6 +64,7 @@ private:
     void mouseMoveEvent(QMouseEvent *);
     void setColorTable();
     void setData();
+    void setOaData();
 signals:
     void sigGetRange(int min,int max);
     void sigGetLength(int len,int offset);

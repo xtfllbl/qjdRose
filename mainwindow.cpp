@@ -7,6 +7,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     rose=new QJDRose();
+    rose->setPalette(Qt::white);  //仍然无用
     cTable=new colorTable();
     rScale=new rightScale();
     tScale=new topScale();

@@ -15,12 +15,14 @@ SOURCES += main.cpp\
     qjdrose.cpp \
     colortable.cpp \
     topscale.cpp \
-    rightscale.cpp
+    rightscale.cpp \
+    qjdobservationattribute.cpp
 
 HEADERS  += mainwindow.h \
     qjdrose.h \
     colortable.h \
     topscale.h \
-    rightscale.h
+    rightscale.h \
+    qjdobservationattribute.h
 
 FORMS    += mainwindow.ui
