@@ -359,7 +359,9 @@ void QJDRose::mouseMoveEvent(QMouseEvent *event)
             }
         }
     }
-    // 还能根据鼠标当前的位置确定鼠标处于哪圈与哪圈的中间，然后将圈圈画出
+
+    /// 还能根据鼠标当前的位置确定鼠标处于哪圈与哪圈的中间，然后将圈圈画出
+    //圆心部分还没有照顾到
     mouseRadius=sqrt((mouseX-circleMiddle.x())*(mouseX-circleMiddle.x())
                      +(mouseY-circleMiddle.y())*(mouseY-circleMiddle.y()));
     for(int i=0;i<radiusData.size()-1;i++)
@@ -371,7 +373,8 @@ void QJDRose::mouseMoveEvent(QMouseEvent *event)
             innerCircle=radiusData[i+1];
         }
     }
-    // 判断mouse 是在哪两条斜线的中间
+
+    /// 判断mouse 是在哪两条斜线的中间
     int temp=angleLineNumber/4;
     int temp1;
     int temp2;
