@@ -129,15 +129,16 @@ void QJDRose::paintEvent(QPaintEvent *)
     pointDataX.resize(circleNumber);
     pointDataY.resize(circleNumber);
     radiusData.resize(circleNumber);
-    minRediusData=1000000;
+    minRadiusData=1000000;
     for(int i=0;i<circleNumber;i++)  //圈圈
     {
         pointDataX[i].resize(angleLineNumber);
         pointDataY[i].resize(angleLineNumber);
         radiusData[i]=int(radius -rUnit*i);  //记录半径
-        if(radiusData[i]<minRediusData)
+        if(radiusData[i]<minRadiusData)
         {
-            minRediusData=radiusData[i];  //记录半径最小值
+            minRadiusData=radiusData[i];  //记录半径最小值
+            minRadiusDataID=i;
         }
         for(int j=0;j<angleLineNumber;j++) //斜斜
         {
@@ -336,12 +337,11 @@ void QJDRose::mouseMoveEvent(QMouseEvent *event)
         }
     }
     //圆心部分,success
-    if(mouseRadius<minRediusData)
+    if(mouseRadius<minRadiusData)
     {
-//        qDebug()<<"in";
-        outerCircle=minRediusData;
-        innerCircle=0;
-        //outerCircleID,innerCircleID待定
+        outerCircle=minRadiusData;
+        innerCircle=-1;
+        // 需要记录相关数据
 
     }
 
@@ -432,7 +432,7 @@ void QJDRose::mouseMoveEvent(QMouseEvent *event)
         // 真的要想办法在最后加一个斜率
         for(int i=temp1+1;i<=temp2;i++)
         {
-//            qDebug()<<i<<":: "<<angleLineK[i];
+            //            qDebug()<<i<<":: "<<angleLineK[i];
             if(mouseK<angleLineK[i])
             {
                 angleLine1=i-1;
@@ -459,29 +459,25 @@ void QJDRose::getCurrentPosData()
 void QJDRose::paintCurrentUnit(QPainter *painter)
 {
     /// 现在是判断出所在斜线和圆弧区间内
-    QPen pen1;
-    pen1.setColor(Qt::white);
-    pen1.setWidth(3);
-    painter->setPen(pen1);
-    painter->drawEllipse(circleMiddle,outerCircle,outerCircle);
-    if(innerCircle!=0)
-    {
-        painter->drawEllipse(circleMiddle,innerCircle,innerCircle);
-    }
-    if(innerCircle==0)
-    {
-        painter->drawPoint(circleMiddle);
-    }
-    painter->drawLine(int(radius+offset), int(radius+offset),
-                     int(radius+offset-radius*cos(PAI/2+kUnit*angleLine1)), int(radius+offset-radius*sin(PAI/2+kUnit*angleLine1)));
-    painter->drawLine(int(radius+offset), int(radius+offset),
-                     int(radius+offset-radius*cos(PAI/2+kUnit*angleLine2)), int(radius+offset-radius*sin(PAI/2+kUnit*angleLine2)));
+    //    QPen pen1;
+    //    pen1.setColor(Qt::white);
+    //    pen1.setWidth(3);
+    //    painter->setPen(pen1);
+    //    painter->drawEllipse(circleMiddle,outerCircle,outerCircle);
+    //    if(innerCircle!=0)
+    //    {
+    //        painter->drawEllipse(circleMiddle,innerCircle,innerCircle);
+    //    }
+    //    if(innerCircle==0)
+    //    {
+    //        painter->drawPoint(circleMiddle);
+    //    }
+    //    painter->drawLine(int(radius+offset), int(radius+offset),
+    //                     int(radius+offset-radius*cos(PAI/2+kUnit*angleLine1)), int(radius+offset-radius*sin(PAI/2+kUnit*angleLine1)));
+    //    painter->drawLine(int(radius+offset), int(radius+offset),
+    //                     int(radius+offset-radius*cos(PAI/2+kUnit*angleLine2)), int(radius+offset-radius*sin(PAI/2+kUnit*angleLine2)));
 
-    /// 将所在空间单独显示出来
-    QPen pen2;
-    pen2.setColor(Qt::red);
-    pen2.setWidth(5);
-    painter->setPen(pen2);
+
     // 显示所在处的两段线段
     //    painter->drawLine(int(radius+offset-innerCircle*cos(PAI/2+kUnit*angleLine1)), int(radius+offset-innerCircle*sin(PAI/2+kUnit*angleLine1)),
     //                      int(radius+offset-outerCircle*cos(PAI/2+kUnit*angleLine1)), int(radius+offset-outerCircle*sin(PAI/2+kUnit*angleLine1)));
@@ -500,23 +496,53 @@ void QJDRose::paintCurrentUnit(QPainter *painter)
     //                      int((radius -rUnit*innerCircleID)*2), int((radius -rUnit*innerCircleID)*2),
     //                      int(angleLine2ID*turnAngleDegree+90), int(turnAngleDegree));
 
-    QPainterPath path1;
-    path1.moveTo(int(radius+offset-innerCircle*cos(PAI/2+kUnit*angleLine1)), int(radius+offset-innerCircle*sin(PAI/2+kUnit*angleLine1)));
-    path1.lineTo(int(radius+offset-outerCircle*cos(PAI/2+kUnit*angleLine1)), int(radius+offset-outerCircle*sin(PAI/2+kUnit*angleLine1)));
-    /// arcTo ( qreal x, qreal y, qreal width, qreal height, qreal startAngle, qreal sweepLength )
-    path1.arcTo(int(offset+rUnit*outerCircleID), int(offset+rUnit*outerCircleID),
-                int((radius -rUnit*outerCircleID)*2), int((radius -rUnit*outerCircleID)*2),
-                int(angleLine1ID*turnAngleDegree+90), int(turnAngleDegree));
-    painter->drawPath(path1);
+    /// 将所在空间单独显示出来
+    QPen pen2;
+    pen2.setColor(Qt::red);
+    pen2.setWidth(5);
+    painter->setPen(pen2);
 
-    QPainterPath path2;
-    path2.moveTo(int(radius+offset-innerCircle*cos(PAI/2+kUnit*angleLine1)), int(radius+offset-innerCircle*sin(PAI/2+kUnit*angleLine1)));
-    /// arcTo ( qreal x, qreal y, qreal width, qreal height, qreal startAngle, qreal sweepLength )
-    path2.arcTo(int(offset+rUnit*innerCircleID), int(offset+rUnit*innerCircleID),
-                int((radius -rUnit*innerCircleID)*2), int((radius -rUnit*innerCircleID)*2),
-                int(angleLine1ID*turnAngleDegree+90), int(turnAngleDegree));
-    painter->drawPath(path2);
+    /// 这是在有四个点的情况下
+    if(innerCircle!=-1)
+    {
+        QPainterPath path1;
+        path1.moveTo(int(radius+offset-innerCircle*cos(PAI/2+kUnit*angleLine1)), int(radius+offset-innerCircle*sin(PAI/2+kUnit*angleLine1)));
+        path1.lineTo(int(radius+offset-outerCircle*cos(PAI/2+kUnit*angleLine1)), int(radius+offset-outerCircle*sin(PAI/2+kUnit*angleLine1)));
+        /// arcTo ( qreal x, qreal y, qreal width, qreal height, qreal startAngle, qreal sweepLength )
+        path1.arcTo(int(offset+rUnit*outerCircleID), int(offset+rUnit*outerCircleID),
+                    int((radius -rUnit*outerCircleID)*2), int((radius -rUnit*outerCircleID)*2),
+                    int(angleLine1ID*turnAngleDegree+90), int(turnAngleDegree));
+        painter->drawPath(path1);
 
-    painter->drawLine(int(radius+offset-innerCircle*cos(PAI/2+kUnit*angleLine2)), int(radius+offset-innerCircle*sin(PAI/2+kUnit*angleLine2)),
-                      int(radius+offset-outerCircle*cos(PAI/2+kUnit*angleLine2)), int(radius+offset-outerCircle*sin(PAI/2+kUnit*angleLine2)));
+        QPainterPath path2;
+        path2.moveTo(int(radius+offset-innerCircle*cos(PAI/2+kUnit*angleLine1)), int(radius+offset-innerCircle*sin(PAI/2+kUnit*angleLine1)));
+        /// arcTo ( qreal x, qreal y, qreal width, qreal height, qreal startAngle, qreal sweepLength )
+        path2.arcTo(int(offset+rUnit*innerCircleID), int(offset+rUnit*innerCircleID),
+                    int((radius -rUnit*innerCircleID)*2), int((radius -rUnit*innerCircleID)*2),
+                    int(angleLine1ID*turnAngleDegree+90), int(turnAngleDegree));
+        painter->drawPath(path2);
+
+        painter->drawLine(int(radius+offset-innerCircle*cos(PAI/2+kUnit*angleLine2)), int(radius+offset-innerCircle*sin(PAI/2+kUnit*angleLine2)),
+                          int(radius+offset-outerCircle*cos(PAI/2+kUnit*angleLine2)), int(radius+offset-outerCircle*sin(PAI/2+kUnit*angleLine2)));
+    }
+    /// 3个点的情况下
+    if(innerCircle==-1)
+    {
+        QPainterPath path3;
+        path3.moveTo(circleMiddle);
+        // 需要最小半径,outerCircle已经记录
+        // 需要起始角度
+        double x=minRadiusData*cos(PAI/2+kUnit*angleLine1ID);
+        double y=minRadiusData*sin(PAI/2+kUnit*angleLine1ID);
+        x=-x;
+        y=-y;
+        path3.lineTo(radius+offset+x,radius+offset+y);     //估计是这个出问题,的确，一直不变换
+        qDebug()<<radius+offset+x<<radius+offset+y;
+        path3.arcTo(offset+rUnit*minRadiusDataID, offset+rUnit*minRadiusDataID,
+                    minRadiusData*2, minRadiusData*2,
+                    angleLine1ID*turnAngleDegree+90, turnAngleDegree);  /// 此项注意要改长度和角度
+        path3.lineTo(circleMiddle.x(),circleMiddle.y());
+
+        painter->drawPath(path3);
+    }
 }
