@@ -35,8 +35,8 @@ private:
     int mouseY;
     int missX;
     int missY;
-    QVector<int> nearX;
-    QVector<int> nearY;
+//    QVector<int> nearX;
+//    QVector<int> nearY;
     QPointF circleMiddle;  //圆心
 
     double mouseRadius;

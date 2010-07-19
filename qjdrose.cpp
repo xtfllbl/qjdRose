@@ -335,30 +335,27 @@ void QJDRose::resizeEvent(QResizeEvent *)
 
 void QJDRose::mouseMoveEvent(QMouseEvent *event)
 {
-//    qDebug()<<event->pos();  //本widget内，不要map系列函数
-    // 发出信号，另外两个widget接受信号，画条短线，不用换算
     mouseX=event->pos().x();
     mouseY=event->pos().y();
     emit sigCurrentMousePosX(event->pos().x());
     emit sigCurrentMousePosY(event->pos().y());
 
-    /// 北半球有定位困难的倾向,不知道为什么
-    nearX.clear();
-    nearY.clear();
-    for(int i=0;i<circleNumber;i++)  //从外向内
-    {
-        for(int j=0;j<angleLineNumber;j++)  //从90度开始顺时针
-        {
-            missX=mouseX-pointDataX[i][j];
-            missY=mouseY-pointDataY[i][j];
-            if(abs(missX)<10 && abs(missY)<10)
-            {
-                nearX<<pointDataX[i][j];
-                nearY<<pointDataY[i][j];
-                update();   // 每次都update不好意思，在有需要的时候update
-            }
-        }
-    }
+//    nearX.clear();
+//    nearY.clear();
+//    for(int i=0;i<circleNumber;i++)  //从外向内
+//    {
+//        for(int j=0;j<angleLineNumber;j++)  //从90度开始顺时针
+//        {
+//            missX=mouseX-pointDataX[i][j];
+//            missY=mouseY-pointDataY[i][j];
+//            if(abs(missX)<10 && abs(missY)<10)
+//            {
+//                nearX<<pointDataX[i][j];
+//                nearY<<pointDataY[i][j];
+//                update();   // 每次都update不好意思，在有需要的时候update
+//            }
+//        }
+//    }
 
     /// 还能根据鼠标当前的位置确定鼠标处于哪圈与哪圈的中间，然后将圈圈画出
     //圆心部分还没有照顾到
@@ -470,6 +467,7 @@ void QJDRose::mouseMoveEvent(QMouseEvent *event)
             }
         }
     }
+    update();  //don`t forget this
 }
 
 /// 获取当前鼠标的数据
@@ -495,10 +493,10 @@ void QJDRose::paintCurrentUnit(QPainter *painter)
     pen2.setColor(Qt::red);
     pen2.setWidth(5);
     painter->setPen(pen2);
-    for(int i=0;i<nearX.size();i++)
-    {
-        painter->drawPoint(nearX[i],nearY[i]);
-    }
+//    for(int i=0;i<nearX.size();i++)
+//    {
+//        painter->drawPoint(nearX[i],nearY[i]);
+//    }
     // 知道当前最近的点，然后如何处理剩下的点呢？
     // 应当扩大范围，将所有临近点画出，然后判断
     painter->drawLine(int(radius+offset), int(radius+offset),
