@@ -3,6 +3,8 @@
 
 #include "math.h"
 #define PAI 3.1415926
+#define CIRCLE 15
+#define ANGLE 16
 // 在此类中手动做出玫瑰图
 QJDRose::QJDRose(QWidget *)
 {
@@ -13,12 +15,25 @@ QJDRose::QJDRose(QWidget *)
     offset=0;
     innerCircle=-2;
 
+    originUnitData.resize(CIRCLE);
+    for(int i=0;i<CIRCLE;i++)
+        originUnitData[i].resize(ANGLE);
+    for(int i=0;i<CIRCLE;i++)
+        for(int j=0;j<ANGLE;j++)
+            originUnitData[i][j]=0;
+
+    colorUnitData.resize(CIRCLE);
+    for(int i=0;i<CIRCLE;i++)
+        colorUnitData[i].resize(ANGLE);
+    for(int i=0;i<CIRCLE;i++)
+        for(int j=0;j<ANGLE;j++)
+            colorUnitData[i][j]=0;
+
     setColorTable();
+    setOaData();
     setData();
     setMinimumSize(400,400);
     setMaximumSize(2000,2000);  //因为需要扩充，照顾layout
-    //    qDebug()<<width()<<height();
-//    setOaData();
 }
 
 void QJDRose::setOaData()
@@ -28,22 +43,102 @@ void QJDRose::setOaData()
     if(!file.open(QFile::ReadOnly))
         qDebug()<<"open failed";
     qint64 fileSize;
-    fileSize=file.size();
     qint64 oaNum;
+    fileSize=file.size();
     oaNum=(file.size()-200)/20;
-//    qDebug()<<oaNum;
     QDataStream in(&file);
     in.setByteOrder(QDataStream::LittleEndian);   //使用readRawData时可无视
     in.skipRawData(200);
-    for(int i=0;i<10;i++)
+
+    minOffset=100000;
+    minAzimuth=100000;
+    maxOffset=0;
+    maxAzimuth=0;
+    /// 录入数据，兼顾求最大最小
+    for(int i=0;i<oaNum;i++)
     {
-//        in.readRawData((char *)&oa,20);
-        in>>oa;  // must use qt4.5, the higher will have sth wrong
-        qDebug()<<"oa:: "<<oa.idx<<oa.cx<<oa.cy<<oa.offset<<oa.azimuth;
+        in>>oa;  // warning::must use qt4.5, 高版本将会产生错误
+        offsetData<<oa.offset;
+        azimuthData<<oa.azimuth;
+
+        if(oa.offset<minOffset)
+        {
+            minOffset=oa.offset;
+        }
+        if(oa.offset>maxOffset)
+        {
+            maxOffset=oa.offset;
+        }
+        if(oa.azimuth<minAzimuth)
+        {
+            minAzimuth=oa.azimuth;
+        }
+        if(oa.azimuth>maxAzimuth)
+        {
+            maxAzimuth=oa.azimuth;
+        }
     }
+    file.close();
 }
 
 void QJDRose::setData()
+{
+    circleNumber=CIRCLE;    //10
+    angleLineNumber=ANGLE;    //16
+
+    /// 新加处理
+    // -------------------归类-------------------- //
+    // 网格划分
+    float offsetUnitLength;
+    float azimuthUnitLength;
+    int gridX;
+    int gridY;
+
+    offsetUnitLength=(maxOffset-minOffset)/circleNumber;
+    azimuthUnitLength=(maxAzimuth-minAzimuth)/angleLineNumber;
+    for(int i=0;i<offsetData.size();i++)
+    {
+        gridX=ceil((offsetData[i]-minOffset)/offsetUnitLength)-1;
+        if(gridX>10)
+            gridX=10;
+        if(gridX<0)
+            gridX=0;
+        gridY=ceil((azimuthData[i]-minAzimuth)/azimuthUnitLength)-1;
+        if(gridY>15)
+            gridY=15;
+        if(gridY<0)
+            gridY=0;
+
+        originUnitData[gridX][gridY]++;
+    }
+
+//    qDebug()<<originUnitData;
+    /// 找到转换后数字的最大
+    int maxOriginUnit=0;
+    int cutNum=0;
+    for(int i=0;i<circleNumber;i++)
+    {
+        for(int j=0;j<angleLineNumber;j++)
+        {
+            if(originUnitData[i][j]>maxOriginUnit)
+            {
+                maxOriginUnit=originUnitData[i][j];
+            }
+        }
+    }
+    cutNum=ceil(maxOriginUnit/255);
+    for(int i=0;i<circleNumber;i++)
+    {
+        for(int j=0;j<angleLineNumber;j++)
+        {
+            colorUnitData[i][j]=originUnitData[i][j]/(cutNum+1);  //不许大于255
+        }
+    }
+    qDebug()<<colorUnitData;
+}
+
+// 废弃，原始随机数据产生方法
+void QJDRose::setData2()
 {
     /// 输入原始数据
     circleNumber=10;
@@ -70,7 +165,7 @@ void QJDRose::setData()
             minNum=originData[i];
         }
     }
-//    qDebug()<<"emit"<<minNum<<maxNum;
+    //    qDebug()<<"emit"<<minNum<<maxNum;
     emit sigGetRange(minNum,maxNum);  //发出信号，让colorTable类能接受到,比connect还要早
 
     cutNum=int(  ceil( (maxNum-minNum)/255.0 )  );
@@ -161,7 +256,7 @@ void QJDRose::paintEvent(QPaintEvent *)
         }
         for(int j=0;j<angleLineNumber;j++) //斜斜
         {
-            QBrush brush(colorTable[ colorData[i][j] ]);   // colorData must <=255, otherwise pro will broken
+            QBrush brush(colorTable[ colorUnitData[i][j] ]);   // colorData must <=255, otherwise pro will broken
             double x=(radius -rUnit*i)*cos(PAI/2+kUnit*j);
             double y=(radius -rUnit*i)*sin(PAI/2+kUnit*j);
             x=-x;  //x倒一下, y不要倒
@@ -260,7 +355,7 @@ void QJDRose::paintEvent(QPaintEvent *)
     jjj=angleLine1ID;
     if(innerCircle!=-2)
     {
-        emit sigCurrentData(originDataDouble[iii][jjj]);
+        emit sigCurrentData(originUnitData[iii][jjj]);
     }
     if(innerCircle==-2)
     {
@@ -423,7 +518,7 @@ void QJDRose::mouseMoveEvent(QMouseEvent *event)
     }
     float mouseK;
     mouseK=(mouseY-circleMiddle.y())/(mouseX-circleMiddle.x());
-//    qDebug()<<"mouseK:: "<<mouseK;
+    //    qDebug()<<"mouseK:: "<<mouseK;
 
     /// 完全分开处理
     if(is1==true)
@@ -581,7 +676,7 @@ void QJDRose::paintCurrentUnit(QPainter *painter)
         x=-x;
         y=-y;
         path3.lineTo(radius+offset+x,radius+offset+y);     //估计是这个出问题,的确，一直不变换
-//        qDebug()<<radius+offset+x<<radius+offset+y;
+        //        qDebug()<<radius+offset+x<<radius+offset+y;
         path3.arcTo(offset+rUnit*minRadiusID, offset+rUnit*minRadiusID,
                     minRadius*2, minRadius*2,
                     angleLine1ID*turnAngleDegree+90, turnAngleDegree);  /// 此项注意要改长度和角度

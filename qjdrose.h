@@ -22,12 +22,24 @@ private:
     QVector<QRgb> colorTable;
     QVector<qint64> originData;
     QVector<int> convetData;
+    QVector<QVector<int> > originUnitData;
+    QVector<QVector<int> > colorUnitData;
     QVector<QVector<qint64> > originDataDouble;
     QVector<QVector<int> > colorData;
     // 记录所有点的位置,一个空间貌似还不够
     QVector<QVector<int> > pointDataX;
     QVector<QVector<int> > pointDataY;
     QVector<int> radiusData;
+
+    // 数据记录
+    QVector<float> offsetData;
+    QVector<float> azimuthData;
+    float minOffset;
+    float maxOffset;
+    float minAzimuth;
+    float maxAzimuth;
+
+
     int minRadius;
     int minRadiusID;
     int maxRadius;
@@ -69,6 +81,7 @@ private:
     void setColorTable();
     void setData();
     void setOaData();
+    void setData2();
 signals:
     void sigGetRange(int min,int max);
     void sigGetLength(int len,int offset);
