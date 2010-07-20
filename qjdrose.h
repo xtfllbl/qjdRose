@@ -22,6 +22,7 @@ private:
     QVector<QRgb> colorTable;
     QVector<qint64> originData;
     QVector<int> convetData;
+    QVector<QVector<qint64> > originDataDouble;
     QVector<QVector<int> > colorData;
     // 记录所有点的位置,一个空间貌似还不够
     QVector<QVector<int> > pointDataX;
@@ -74,6 +75,7 @@ signals:
     void sigCurrentMousePos(int x,int y);
     void sigCurrentMousePosX(int x);
     void sigCurrentMousePosY(int y);
+    void sigCurrentData(int data);
 };
 
 #endif // QJDROSE_H

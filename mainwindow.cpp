@@ -12,6 +12,10 @@ MainWindow::MainWindow(QWidget *parent) :
     rScale=new rightScale();
     tScale=new topScale();
 
+    statsLabel1=new QLabel();
+    statsLabel1->setMinimumWidth(100);
+    statsLabel1->setText("Let`s begin");
+    ui->statusBar->addWidget(statsLabel1);
     rose->setMouseTracking(true);
     ui->centralWidget->setMouseTracking(true);
     setMouseTracking(true);
@@ -23,6 +27,10 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(rose,SIGNAL(sigCurrentMousePosX(int)),tScale,SLOT(setPosLine(int)));
     connect(rose,SIGNAL(sigCurrentMousePosY(int)),rScale,SLOT(setPosLine(int)));
     rose->emitRange();  //链接之后发送信号
+
+    // 链接显示数据
+    // QPaintEngine::setSystemRect: Should not be changed while engine is active?????
+    connect(rose,SIGNAL(sigCurrentData(int)),this,SLOT(showData(int)));  //为何会引发这种问题, 知道了，因为没有重绘。。。
 
     // 进行布局
     QGridLayout *gLayout=new QGridLayout();
@@ -84,4 +92,16 @@ void MainWindow::resizeEvent(QResizeEvent *)
 void MainWindow::mouseMoveEvent(QMouseEvent */*event*/)
 {
 //        qDebug()<<mapFromGlobal(event->pos());
+}
+
+void MainWindow::showData(int data)
+{
+    if(data!=-2)
+    {
+        statsLabel1->setText(QString::number(data));
+    }
+    if(data==-2)
+    {
+        statsLabel1->setText("Standby");
+    }
 }

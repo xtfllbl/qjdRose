@@ -25,12 +25,14 @@ public:
     colorTable *cTable;
 private:
     Ui::MainWindow *ui;
+    QLabel *statsLabel1;
 
     void resizeEvent(QResizeEvent *);
     void mouseMoveEvent(QMouseEvent *);
 private slots:
     void on_actionZoomOut_triggered();
     void on_actionZoomIn_triggered();
+    void showData(int data);
 };
 
 #endif // MAINWINDOW_H

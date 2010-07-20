@@ -79,6 +79,17 @@ void QJDRose::setData()
         convetData<<int(floor(originData[i]*1.0/(cutNum+1)));   //此数不得大于255，否则程序崩溃
     }
 
+    /// 转换至二维数组用于提取数据,必须与显示的二维数组同步
+    // 此数组用于鼠标移动时显示相关的数据
+    originDataDouble.resize(circleNumber);
+    for(int i=0;i<circleNumber;i++)
+    {
+        originDataDouble[i].resize(angleLineNumber);
+        for(int j=0;j<angleLineNumber;j++)
+        {
+            originDataDouble[i][j]=originData[j+angleLineNumber*i];
+        }
+    }
     /// 转换至二维数组用于显示
     colorData.resize(circleNumber);
     for(int i=0;i<circleNumber;i++)
@@ -242,10 +253,26 @@ void QJDRose::paintEvent(QPaintEvent *)
         }
     }
 
+    /// 发送相关信息，显示当前的数据情况
+    int iii;
+    int jjj;
+    iii=outerCircleID;
+    jjj=angleLine1ID;
+    if(innerCircle!=-2)
+    {
+        emit sigCurrentData(originDataDouble[iii][jjj]);
+    }
+    if(innerCircle==-2)
+    {
+        emit sigCurrentData(-2);
+    }
+    //    qDebug()<<circleNumber<<angleLineNumber;(10,16)
+    //        qDebug()<<"circle:: "<<innerCircleID<<outerCircleID;  //inner(1~9) outer(0~9)  使用outerCircleID
+    //    qDebug()<<"angleLine:: "<<angleLine1ID<<angleLine2ID;  //正常，请使用angleLine1ID(0~15)  angleLine2ID(1~16)
     /// 如果鼠标不在范围内应该是不显示的
     if(innerCircle!=-2)
     {
-        paintCurrentUnit(&painter);
+        paintCurrentUnit(&painter);  //由于不显示，所以无法在此函数中发送出界信息
     }
 }
 
@@ -357,6 +384,7 @@ void QJDRose::mouseMoveEvent(QMouseEvent *event)
     if(mouseRadius<minRadius)
     {
         outerCircle=minRadius;
+        outerCircleID=minRadiusID;
         innerCircle=-1;
     }
 
@@ -515,6 +543,9 @@ void QJDRose::paintCurrentUnit(QPainter *painter)
     pen2.setWidth(5);
     painter->setPen(pen2);
 
+    // innerCircle==-2  鼠标不在范围内
+    // innerCircle==-1   鼠标在中心区域
+    // innerCircle>=0    鼠标在常规网格区域
     /// 这是在有四个点的情况下
     if(innerCircle!=-1 && innerCircle!=-2)
     {
