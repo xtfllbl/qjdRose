@@ -11,6 +11,8 @@ QJDRose::QJDRose(QWidget *)
     circleNumber=0;
     angleLineNumber=0;
     offset=0;
+    innerCircle=-2;
+
     setColorTable();
     setData();
     setMinimumSize(400,400);
@@ -129,16 +131,22 @@ void QJDRose::paintEvent(QPaintEvent *)
     pointDataX.resize(circleNumber);
     pointDataY.resize(circleNumber);
     radiusData.resize(circleNumber);
-    minRadiusData=1000000;
+    minRadius=1000000;
+    maxRadius=0;
     for(int i=0;i<circleNumber;i++)  //圈圈
     {
         pointDataX[i].resize(angleLineNumber);
         pointDataY[i].resize(angleLineNumber);
         radiusData[i]=int(radius -rUnit*i);  //记录半径
-        if(radiusData[i]<minRadiusData)
+        if(radiusData[i]<minRadius)
         {
-            minRadiusData=radiusData[i];  //记录半径最小值
-            minRadiusDataID=i;
+            minRadius=radiusData[i];  //记录半径最小值
+            minRadiusID=i;
+        }
+        if(radiusData[i]>maxRadius)
+        {
+            maxRadius=radiusData[i];  //记录半径最小值
+            maxRadiusID=i;
         }
         for(int j=0;j<angleLineNumber;j++) //斜斜
         {
@@ -234,7 +242,11 @@ void QJDRose::paintEvent(QPaintEvent *)
         }
     }
 
-    paintCurrentUnit(&painter);
+    /// 如果鼠标不在范围内应该是不显示的
+    if(innerCircle!=-2)
+    {
+        paintCurrentUnit(&painter);
+    }
 }
 
 void QJDRose::setColorTable()
@@ -325,6 +337,11 @@ void QJDRose::mouseMoveEvent(QMouseEvent *event)
     /// ----------还能根据鼠标当前的位置确定鼠标处于哪圈与哪圈的中间，然后将圈圈画出----------///
     mouseRadius=sqrt((mouseX-circleMiddle.x())*(mouseX-circleMiddle.x())
                      +(mouseY-circleMiddle.y())*(mouseY-circleMiddle.y()));
+    // 超出范围则不显示,very good
+    if(mouseRadius>maxRadius)
+    {
+        innerCircle=-2;
+    }
     for(int i=0;i<radiusData.size()-1;i++)
     {
         if(mouseRadius<radiusData[i] && mouseRadius>radiusData[i+1])
@@ -336,15 +353,12 @@ void QJDRose::mouseMoveEvent(QMouseEvent *event)
             innerCircleID=i+1;
         }
     }
-    //圆心部分,success
-    if(mouseRadius<minRadiusData)
+    //圆心部分
+    if(mouseRadius<minRadius)
     {
-        outerCircle=minRadiusData;
+        outerCircle=minRadius;
         innerCircle=-1;
-        // 需要记录相关数据
-
     }
-
 
     /// ----------------------判断mouse 是在哪两条斜线的中间-------------------- ///
     // 此处做的太过冗余，考虑精简
@@ -381,7 +395,7 @@ void QJDRose::mouseMoveEvent(QMouseEvent *event)
     }
     float mouseK;
     mouseK=(mouseY-circleMiddle.y())/(mouseX-circleMiddle.x());
-    qDebug()<<"mouseK:: "<<mouseK;
+//    qDebug()<<"mouseK:: "<<mouseK;
 
     /// 完全分开处理
     if(is1==true)
@@ -394,7 +408,6 @@ void QJDRose::mouseMoveEvent(QMouseEvent *event)
                 angleLine2=i;
                 angleLine1ID=i-1;
                 angleLine2ID=i;
-//                qDebug()<<angleLine1<<angleLine2;
                 break;
             }
         }
@@ -432,7 +445,7 @@ void QJDRose::mouseMoveEvent(QMouseEvent *event)
         // 真的要想办法在最后加一个斜率
         for(int i=temp1+1;i<=temp2;i++)
         {
-            //            qDebug()<<i<<":: "<<angleLineK[i];
+            //qDebug()<<i<<":: "<<angleLineK[i];
             if(mouseK<angleLineK[i])
             {
                 angleLine1=i-1;
@@ -503,7 +516,7 @@ void QJDRose::paintCurrentUnit(QPainter *painter)
     painter->setPen(pen2);
 
     /// 这是在有四个点的情况下
-    if(innerCircle!=-1)
+    if(innerCircle!=-1 && innerCircle!=-2)
     {
         QPainterPath path1;
         path1.moveTo(int(radius+offset-innerCircle*cos(PAI/2+kUnit*angleLine1)), int(radius+offset-innerCircle*sin(PAI/2+kUnit*angleLine1)));
@@ -532,14 +545,14 @@ void QJDRose::paintCurrentUnit(QPainter *painter)
         path3.moveTo(circleMiddle);
         // 需要最小半径,outerCircle已经记录
         // 需要起始角度
-        double x=minRadiusData*cos(PAI/2+kUnit*angleLine1ID);
-        double y=minRadiusData*sin(PAI/2+kUnit*angleLine1ID);
+        double x=minRadius*cos(PAI/2+kUnit*angleLine1ID);
+        double y=minRadius*sin(PAI/2+kUnit*angleLine1ID);
         x=-x;
         y=-y;
         path3.lineTo(radius+offset+x,radius+offset+y);     //估计是这个出问题,的确，一直不变换
 //        qDebug()<<radius+offset+x<<radius+offset+y;
-        path3.arcTo(offset+rUnit*minRadiusDataID, offset+rUnit*minRadiusDataID,
-                    minRadiusData*2, minRadiusData*2,
+        path3.arcTo(offset+rUnit*minRadiusID, offset+rUnit*minRadiusID,
+                    minRadius*2, minRadius*2,
                     angleLine1ID*turnAngleDegree+90, turnAngleDegree);  /// 此项注意要改长度和角度
         path3.lineTo(circleMiddle.x(),circleMiddle.y());
 

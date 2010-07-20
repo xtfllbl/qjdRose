@@ -27,8 +27,10 @@ private:
     QVector<QVector<int> > pointDataX;
     QVector<QVector<int> > pointDataY;
     QVector<int> radiusData;
-    int minRadiusData;
-    int minRadiusDataID;
+    int minRadius;
+    int minRadiusID;
+    int maxRadius;
+    int maxRadiusID;
     QVector<float> angleLineK;  //这个不能为0，否则好多都为0了
     int maxNum;
     int minNum;
