@@ -29,7 +29,7 @@ void QJDRose::setOaData()
     fileSize=file.size();
     qint64 oaNum;
     oaNum=(file.size()-200)/20;
-    qDebug()<<oaNum;
+//    qDebug()<<oaNum;
     QDataStream in(&file);
     in.setByteOrder(QDataStream::LittleEndian);   //使用readRawData时可无视
     in.skipRawData(200);
@@ -68,7 +68,7 @@ void QJDRose::setData()
             minNum=originData[i];
         }
     }
-    qDebug()<<"emit"<<minNum<<maxNum;
+//    qDebug()<<"emit"<<minNum<<maxNum;
     emit sigGetRange(minNum,maxNum);  //发出信号，让colorTable类能接受到,比connect还要早
 
     cutNum=int(  ceil( (maxNum-minNum)/255.0 )  );
@@ -394,7 +394,7 @@ void QJDRose::mouseMoveEvent(QMouseEvent *event)
                 angleLine2=i;
                 angleLine1ID=i-1;
                 angleLine2ID=i;
-                qDebug()<<angleLine1<<angleLine2;
+//                qDebug()<<angleLine1<<angleLine2;
                 break;
             }
         }
@@ -537,7 +537,7 @@ void QJDRose::paintCurrentUnit(QPainter *painter)
         x=-x;
         y=-y;
         path3.lineTo(radius+offset+x,radius+offset+y);     //估计是这个出问题,的确，一直不变换
-        qDebug()<<radius+offset+x<<radius+offset+y;
+//        qDebug()<<radius+offset+x<<radius+offset+y;
         path3.arcTo(offset+rUnit*minRadiusDataID, offset+rUnit*minRadiusDataID,
                     minRadiusData*2, minRadiusData*2,
                     angleLine1ID*turnAngleDegree+90, turnAngleDegree);  /// 此项注意要改长度和角度
