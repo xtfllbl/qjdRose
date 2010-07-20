@@ -47,6 +47,8 @@ private:
     QVector<float> angleLineK;  //这个不能为0，否则好多都为0了
     int maxNum;
     int minNum;
+    int maxOriginUnit;
+    int minOriginUnit;
     int cutNum;
     int length;
 

@@ -4,7 +4,7 @@
 #include "math.h"
 #define PAI 3.1415926
 #define CIRCLE 15
-#define ANGLE 16
+#define ANGLE 16   //这个一大会出问题？？
 // 在此类中手动做出玫瑰图
 QJDRose::QJDRose(QWidget *)
 {
@@ -112,9 +112,9 @@ void QJDRose::setData()
         originUnitData[gridX][gridY]++;
     }
 
-//    qDebug()<<originUnitData;
     /// 找到转换后数字的最大
-    int maxOriginUnit=0;
+     maxOriginUnit=0;
+     minOriginUnit=1000000;
     int cutNum=0;
     for(int i=0;i<circleNumber;i++)
     {
@@ -124,16 +124,28 @@ void QJDRose::setData()
             {
                 maxOriginUnit=originUnitData[i][j];
             }
+            if(originUnitData[i][j]<minOriginUnit)
+            {
+                minOriginUnit=originUnitData[i][j];
+            }
         }
     }
+//    emit sigGetRange(minOriginUnit,maxOriginUnit);  //发出信号，让colorTable类能接受到,比connect还要早
+
     cutNum=ceil(maxOriginUnit/255);
     for(int i=0;i<circleNumber;i++)
     {
         for(int j=0;j<angleLineNumber;j++)
         {
-            colorUnitData[i][j]=originUnitData[i][j]/(cutNum+1);  //不许大于255
+            if(originUnitData[i][j]!=0)
+            {
+                //不许大于255
+                colorUnitData[i][j]=ceil(originUnitData[i][j]/(cutNum+1));
+            }
         }
     }
+    qDebug()<<originUnitData;
+    qDebug()<<"cutNum:: "<<cutNum;
     qDebug()<<colorUnitData;
 }
 
@@ -375,8 +387,9 @@ void QJDRose::setColorTable()
 {
     colorTable.clear();
     /*----------彩色色表----------*/
+    colorTable<<qRgb(255,255,255);
     int i,r,g,b;
-    for (i = 0; i < 32; i++)
+    for (i = 1; i < 32; i++)
     {
         r = 0;
         g = 0;
@@ -429,7 +442,7 @@ void QJDRose::setColorTable()
 
 void QJDRose::emitRange()
 {
-    emit sigGetRange(minNum,maxNum);
+    emit sigGetRange(minOriginUnit,maxOriginUnit);
 }
 
 void QJDRose::resizeEvent(QResizeEvent *)
