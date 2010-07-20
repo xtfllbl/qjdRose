@@ -164,7 +164,7 @@ void QJDRose::paintEvent(QPaintEvent *)
             toFillPath.arcTo(offset+rUnit*i, offset+rUnit*i, (radius -rUnit*i)*2, (radius -rUnit*i)*2,
                              j*turnAngleDegree+90, turnAngleDegree);  /// 此项注意要改长度和角度
             toFillPath.closeSubpath();
-//            painter.fillPath(toFillPath,brush);
+            painter.fillPath(toFillPath,brush);
         }
     }
     /// 基本框架
@@ -511,7 +511,7 @@ void QJDRose::paintCurrentUnit(QPainter *painter)
 
     /// 将所在空间单独显示出来
     QPen pen2;
-    pen2.setColor(Qt::red);
+    pen2.setColor(Qt::white);
     pen2.setWidth(5);
     painter->setPen(pen2);
 
