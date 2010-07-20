@@ -16,6 +16,8 @@ public:
     int mouseY;
     float diameter;
 
+    int minOffset;
+    int maxOffset;
 private:
     void paintEvent(QPaintEvent *);
     void paintPosLine(QPainter *painter);
@@ -24,6 +26,7 @@ signals:
 public slots:
     void setLength(int len,int off);
     void setPosLine(int y);
+    void setOffset(int min,int max);
 };
 
 #endif // QJDSCALE_H

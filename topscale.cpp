@@ -67,3 +67,9 @@ void topScale::paintPosLine(QPainter *painter)
     painter->setPen(pen);
     painter->drawLine(mouseX,5,mouseX,15);
 }
+
+void topScale::setOffset(int min, int max)
+{
+    minOffset=min;
+    maxOffset=max;
+}

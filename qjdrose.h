@@ -87,6 +87,7 @@ private:
 signals:
     void sigGetRange(int min,int max);
     void sigGetLength(int len,int offset);
+    void sigSetOffset(int minOffset,int maxOffset);
     void sigCurrentMousePos(int x,int y);
     void sigCurrentMousePosX(int x);
     void sigCurrentMousePosY(int y);

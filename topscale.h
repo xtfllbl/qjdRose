@@ -13,7 +13,8 @@ public:
     int offset;
     int mouseX;
     float diameter;
-
+    int minOffset;
+    int maxOffset;
 private:
     void paintEvent(QPaintEvent *);
     void paintPosLine(QPainter *painter);
@@ -23,6 +24,8 @@ signals:
 public slots:
     void setLength(int len,int off);
     void setPosLine(int x);
+    void setOffset(int min,int max);
+
 };
 
 #endif // TOPSCALE_H

@@ -21,8 +21,12 @@ MainWindow::MainWindow(QWidget *parent) :
     setMouseTracking(true);
 
     connect(rose,SIGNAL(sigGetRange(int,int)),cTable,SLOT(setRange(int,int)));
+    // 设置线段长度
     connect(rose,SIGNAL(sigGetLength(int,int)),rScale,SLOT(setLength(int,int)));
     connect(rose,SIGNAL(sigGetLength(int,int)),tScale,SLOT(setLength(int,int)));
+    // 设置偏移距
+    connect(rose,SIGNAL(sigSetOffset(int,int)),rScale,SLOT(setOffset(int,int)));
+    connect(rose,SIGNAL(sigSetOffset(int,int)),tScale,SLOT(setOffset(int,int)));
     // 链接鼠标
     connect(rose,SIGNAL(sigCurrentMousePosX(int)),tScale,SLOT(setPosLine(int)));
     connect(rose,SIGNAL(sigCurrentMousePosY(int)),rScale,SLOT(setPosLine(int)));
@@ -69,24 +73,23 @@ void MainWindow::on_actionZoomOut_triggered()  //缩小
 void MainWindow::resizeEvent(QResizeEvent *)
 {
     /// resize含有诸多问题，无法实现
-    //    int roseWid=rose->width();
-    //    int roseHei=rose->height();
-    //    if(roseWid<roseHei)
-    //    {
-    //        roseWid=roseHei;
-    //    }
-    //    if(roseHei<roseWid)
-    //    {
-    //        roseHei=roseWid;
-    //    }
+//        int roseWid=rose->width();
+//        int roseHei=rose->height();
+//        if(roseWid<roseHei)
+//        {
+//            roseWid=roseHei;
+//        }
+//        if(roseHei<roseWid)
+//        {
+//            roseHei=roseWid;
+//        }
 
-    //    int allWid;
-    //    int allHei;
-    //    allWid=cTable->width()+rScale->width()+roseWid;
-    //    allHei=tScale->height()+roseHei;
-    //    qDebug()<<roseWid<<roseHei<<allWid<<allHei;
-    //    resize(allWid,allHei);   //一resize，就会降低到最小尺寸。。。为什么会强制缩小？
-    //    resize(width()+10,height()+10);  //同样不可取
+//        int allWid;
+//        int allHei;
+//        allWid=cTable->width()+rScale->width()+roseWid+50;
+//        allHei=tScale->height()+roseHei+50;
+//        qDebug()<<roseWid<<roseHei<<allWid<<allHei;
+//        resize(allWid,allHei);   //一resize，就会降低到最小尺寸。。。为什么会强制缩小？
 }
 
 void MainWindow::mouseMoveEvent(QMouseEvent */*event*/)
