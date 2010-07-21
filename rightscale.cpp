@@ -31,11 +31,11 @@ void rightScale::paintEvent(QPaintEvent *)
     {
         if(i<3)
         {
-            num=i*offsetUnit-minOffset;
+            num=int(i*offsetUnit-minOffset);
         }
         if(i>=3)
         {
-            num=i*offsetUnit+minOffset;
+            num=int(i*offsetUnit+minOffset);
         }
         offsetText<<QString::number(num);
     }
@@ -103,14 +103,14 @@ void rightScale::paintPosLine(QPainter *painter)
     }
 }
 
-void rightScale::setOffset(int min, int max)
+void rightScale::setOffset(float min, float max)
 {
 //    qDebug()<<"right setOffset";   //好像也没被执行
-    minOffset=min;
-    maxOffset=max;
+    minOffset=int(min);
+    maxOffset=int(max);
 }
 
-void rightScale::resizeWithCircle(int wid, int hei)
+void rightScale::resizeWithCircle(int , int )
 {
 //    resize(width(),hei);  //只需改变宽度
 }

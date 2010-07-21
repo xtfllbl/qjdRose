@@ -26,7 +26,7 @@ signals:
 public slots:
     void setLength(int len,int off);
     void setPosLine(int y);
-    void setOffset(int min,int max);
+    void setOffset(float min, float max);
     void resizeWithCircle(int wid, int hei);
 };
 

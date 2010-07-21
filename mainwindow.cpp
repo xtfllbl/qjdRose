@@ -28,8 +28,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(rose,SIGNAL(sigGetLength(int,int)),tScale,SLOT(setLength(int,int)));
     connect(rose,SIGNAL(sigGetLength(int,int)),cTable,SLOT(setLength(int,int)));
     // 设置偏移距
-    connect(rose,SIGNAL(sigSetOffset(int,int)),rScale,SLOT(setOffset(int,int)));
-    connect(rose,SIGNAL(sigSetOffset(int,int)),tScale,SLOT(setOffset(int,int)));
+    connect(rose,SIGNAL(sigSetOffset(float,float)),rScale,SLOT(setOffset(float,float)));
+    connect(rose,SIGNAL(sigSetOffset(float,float)),tScale,SLOT(setOffset(float,float)));
     // 链接鼠标
     connect(rose,SIGNAL(sigCurrentMousePosX(int)),tScale,SLOT(setPosLine(int)));
     connect(rose,SIGNAL(sigCurrentMousePosY(int)),rScale,SLOT(setPosLine(int)));

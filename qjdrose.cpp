@@ -11,8 +11,8 @@
 /// 2.实验窗口缩小的方法。。。
 QJDRose::QJDRose(QWidget *)
 {
-    circleNumber=0;
-    angleLineNumber=0;
+//    circleNumber=0;  //没必要初始化了
+//    angleLineNumber=0;
     setOffsetUnit(15);
     setAzimuthUnit(16);
     //    setMouseTracking(true);
@@ -90,10 +90,6 @@ void QJDRose::setOaData()
 
 void QJDRose::setData()
 {
-//    circleNumber=CIRCLE;    // already be setted
-//    angleLineNumber=ANGLE;    //16
-
-    /// 新加处理
     // -------------------归类-------------------- //
     // 网格划分
     float offsetUnitLength;
@@ -156,7 +152,7 @@ void QJDRose::setData()
     qDebug()<<colorUnitData;
 }
 
-// 废弃，原始随机数据产生方法
+// 废弃状态
 void QJDRose::setData2()
 {
     /// 输入原始数据

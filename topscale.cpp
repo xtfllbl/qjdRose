@@ -31,11 +31,11 @@ void topScale::paintEvent(QPaintEvent *)
     {
         if(i<3)
         {
-            num=i*offsetUnit-minOffset;
+            num=int(i*offsetUnit-minOffset);
         }
         if(i>=3)
         {
-            num=i*offsetUnit+minOffset;
+            num=int(i*offsetUnit+minOffset);
         }
         offsetText<<QString::number(num);
     }
@@ -101,14 +101,14 @@ void topScale::paintPosLine(QPainter *painter)
     }
 }
 
-void topScale::setOffset(int min, int max)
+void topScale::setOffset(float min, float max)
 {
 //    qDebug()<<"top setOffset";
-    minOffset=min;
-    maxOffset=max;
+    minOffset=int(min);
+    maxOffset=int(max);
 }
 
-void topScale::resizeWithCircle(int wid, int hei)
+void topScale::resizeWithCircle(int , int )
 {
 //    resize(wid,height());  //只需改变宽度
     /// 的确是更着走，但是界面不管，继续放大。。。。怎会如此无理
