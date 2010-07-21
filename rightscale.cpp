@@ -8,6 +8,8 @@ rightScale::rightScale(QWidget *parent) :
     setMinimumWidth(70);
     length=0;
     offset=0;
+    minOffset=0;
+    maxOffset=0;
 }
 
 void rightScale::paintEvent(QPaintEvent *)
@@ -20,22 +22,39 @@ void rightScale::paintEvent(QPaintEvent *)
 
     /// 刻度 & 坐标
     float longLine=diameter/6;
-    int offsetUnit=(maxOffset-minOffset)/3;
+    float offsetUnit=(maxOffset-minOffset)/3;
+//    qDebug()<<"right:: "<<maxOffset<<minOffset;
     QVector<QString> offsetText;
     int num;
+    // 。。。真的有最小offset存在则坐标不能这样写了
     for(int i=-3;i<4;i++)
     {
-        num=i*offsetUnit;
+        if(i<3)
+        {
+            num=i*offsetUnit-minOffset;
+        }
+        if(i>=3)
+        {
+            num=i*offsetUnit+minOffset;
+        }
         offsetText<<QString::number(num);
     }
     for(int i=0;i<6;i++)
     {
         painter.drawLine(5, int(longLine*i+offset), 10, int(longLine*i+offset));
         // 想想如何谢坐标轴,we have min/maxOffset
-        painter.drawText(12, int(longLine*i+offset)-5, offsetText[i]);
+        if(i!=3)
+        {
+        painter.drawText(13, int(longLine*i+offset)+5, offsetText[i]);
+    }
+        if(i==3)
+        {
+            painter.drawText(13, int(longLine*i+offset)+5,
+                             QString::number(minOffset)+"("+QString::number(-minOffset)+")");
+        }
     }
     painter.drawLine(5, int(diameter+offset), 10, int(diameter+offset));  //手动保证最后一条线
-    painter.drawText( 12, int(diameter+offset)-5, offsetText[6]);  //手动保证最后一条线
+    painter.drawText( 13, int(diameter+offset)+5, offsetText[6]);  //手动保证最后一条线
 
     float shortLine=diameter/30;
     for(int i=0;i<30;i++)
@@ -83,6 +102,7 @@ void rightScale::paintPosLine(QPainter *painter)
 
 void rightScale::setOffset(int min, int max)
 {
+//    qDebug()<<"right setOffset";   //好像也没被执行
     minOffset=min;
     maxOffset=max;
 }

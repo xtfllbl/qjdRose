@@ -78,6 +78,7 @@ void QJDRose::setOaData()
             maxAzimuth=oa.azimuth;
         }
     }
+    qDebug()<<"rose ::"<<minOffset<<maxOffset;
     file.close();
 }
 
@@ -238,6 +239,7 @@ void QJDRose::paintEvent(QPaintEvent *)
     int rUnitNum=int(radius/rUnit+1);  //加上最外圈,最外圈不再单独画
 
     emit sigGetLength(length,offset);  /// 发送相关信息
+    emit sigSetOffset(minOffset,maxOffset);
 
     circleMiddle.setX(radius+offset);
     circleMiddle.setY(radius+offset);

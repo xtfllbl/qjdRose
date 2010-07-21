@@ -6,6 +6,10 @@ topScale::topScale(QWidget *parent) :
 {
     setMaximumHeight(50);  //用不着这么宽
     setMinimumHeight(50);
+    length=0;
+    offset=0;
+    minOffset=0;
+    maxOffset=0;
 }
 
 
@@ -19,11 +23,37 @@ void topScale::paintEvent(QPaintEvent *)
 
     /// 刻度
     float longLine=diameter/6;
+    float offsetUnit=(maxOffset-minOffset)/3;    //这个东西不准，乘回去误差太大
+    //    qDebug()<<"top:: "<<maxOffset<<minOffset;
+    QVector<QString> offsetText;
+    int num;
+    for(int i=-3;i<4;i++)
+    {
+        if(i<3)
+        {
+            num=i*offsetUnit-minOffset;
+        }
+        if(i>=3)
+        {
+            num=i*offsetUnit+minOffset;
+        }
+        offsetText<<QString::number(num);
+    }
     for(int i=0;i<6;i++)
     {
         painter.drawLine(int(longLine*i+offset), 5, int(longLine*i+offset), 10 );
+        if(i!=3)
+        {
+            painter.drawText(int(longLine*i+offset)-20, 25, offsetText[i]);
+        }
+        if(i==3)
+        {
+            painter.drawText(int(longLine*i+offset)-20, 40,
+                             QString::number(minOffset)+"("+QString::number(-minOffset)+")");  //这个很难办,位置很难放
+        }
     }
-    painter.drawLine(int(diameter+offset),5,int(diameter+offset),10);  //手动保证最后一条线
+    painter.drawLine(int(diameter+offset),5,int(diameter+offset),10);
+    painter.drawText( int(diameter+offset)-20, 25, offsetText[6]);
 
     float shortLine=diameter/30;
     for(int i=0;i<30;i++)
@@ -70,6 +100,7 @@ void topScale::paintPosLine(QPainter *painter)
 
 void topScale::setOffset(int min, int max)
 {
+//    qDebug()<<"top setOffset";
     minOffset=min;
     maxOffset=max;
 }
