@@ -27,6 +27,7 @@ public slots:
     void setLength(int len,int off);
     void setPosLine(int y);
     void setOffset(int min,int max);
+    void resizeWithCircle(int wid, int hei);
 };
 
 #endif // QJDSCALE_H

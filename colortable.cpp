@@ -140,8 +140,20 @@ void colorTable::setColorTable()
 
 void colorTable::setLength(int len,int off)
 {
-    qDebug()<<"color setLenth:: "<<len<<off;  //没有将这个和他们layout 在一起
+//    qDebug()<<"color setLenth:: "<<len<<off;  //没有将这个和他们layout 在一起
     length=len;
     offset=off;
     update();       //及时改变
+}
+
+void colorTable::resizeWithCircle(int wid, int hei)
+{
+    resize(width(),hei);  //会地挡不住resizeEvent的诱惑主动投靠。。
+    circleWidth=wid;
+    circleHeight=hei;
+}
+
+void colorTable::resizeEvent(QResizeEvent *)
+{
+//    resize(width(),circleHeight);  //会地挡不住resizeEvent的诱惑主动投靠。。
 }

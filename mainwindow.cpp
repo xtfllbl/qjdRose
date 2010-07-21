@@ -5,6 +5,8 @@ MainWindow::MainWindow(QWidget *parent) :
         QMainWindow(parent),
         ui(new Ui::MainWindow)
 {
+    isRecorded=false;
+
     ui->setupUi(this);
     rose=new QJDRose();
     rose->setPalette(Qt::white);  //仍然无用
@@ -31,21 +33,15 @@ MainWindow::MainWindow(QWidget *parent) :
     // 链接鼠标
     connect(rose,SIGNAL(sigCurrentMousePosX(int)),tScale,SLOT(setPosLine(int)));
     connect(rose,SIGNAL(sigCurrentMousePosY(int)),rScale,SLOT(setPosLine(int)));
+    // 界面同步缩放
+    connect(rose,SIGNAL(sigWidgetSize(int,int)),tScale,SLOT(resizeWithCircle(int,int)));
+    connect(rose,SIGNAL(sigWidgetSize(int,int)),rScale,SLOT(resizeWithCircle(int,int)));
+    connect(rose,SIGNAL(sigWidgetSize(int,int)),cTable,SLOT(resizeWithCircle(int,int)));
     rose->emitRange();  //链接之后发送信号
 
     // 链接显示数据
     // QPaintEngine::setSystemRect: Should not be changed while engine is active?????
     connect(rose,SIGNAL(sigCurrentData(int)),this,SLOT(showData(int)));  //为何会引发这种问题, 知道了，因为没有重绘。。。
-
-    // 进行布局
-    //    QGridLayout *gLayout=new QGridLayout();
-    //    gLayout->addWidget(tScale,0,1);
-    //    gLayout->addWidget(rScale,1,0);
-    //    gLayout->addWidget(rose,1,1);
-    //    QHBoxLayout *hLayout=new QHBoxLayout();
-    //    hLayout->addWidget(cTable);
-    //    hLayout->addLayout(gLayout);
-    //    ui->centralWidget->setLayout(hLayout);  //设置layout
 
     QGridLayout *gLayout=new QGridLayout();
     gLayout->addWidget(tScale,0,2);
@@ -53,7 +49,6 @@ MainWindow::MainWindow(QWidget *parent) :
     gLayout->addWidget(rose,1,2);
     gLayout->addWidget(cTable,1,0);
     ui->centralWidget->setLayout(gLayout);  //设置layout
-
     setCentralWidget(ui->centralWidget);  //设置显示
 }
 
@@ -64,41 +59,52 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_actionZoomIn_triggered()  //放大
 {
-    //    qDebug()<<rose->width()<<rose->height();
-    rose->getCurrentPosData();
-    rose->resize(rose->width()+100,rose->height()+100);
-//    rose->getCurrentPosData();  //竟然没有变化，稍后找你算帐
+//    rose->getCurrentPosData();
+//    rose->resize(rose->width()+100,rose->height()+100);
 }
 
 void MainWindow::on_actionZoomOut_triggered()  //缩小
 {
-    //    qDebug()<<rose->width()<<rose->height();
-    if(rose->width()>100 && rose->height()>100)  //小于100不缩小了
-    {
-        rose->resize(rose->width()-100,rose->height()-100);
-    }
+//    if(rose->width()>100 && rose->height()>100)  //小于100不缩小了
+//    {
+//        rose->resize(rose->width()-100,rose->height()-100);
+//    }
 }
 
 void MainWindow::resizeEvent(QResizeEvent *)
 {
     /// resize含有诸多问题，无法实现
-//        int roseWid=rose->width();
-//        int roseHei=rose->height();
-//        if(roseWid<roseHei)
-//        {
-//            roseWid=roseHei;
-//        }
-//        if(roseHei<roseWid)
-//        {
-//            roseHei=roseWid;
-//        }
+    /// 主要是不能小于总体尺寸，否则就会不给力。。。
+    int roseWid=rose->width();
+    int roseHei=rose->height();
+    if(roseWid<roseHei)
+    {
+        roseWid=roseHei;
+    }
+    if(roseHei<roseWid)
+    {
+        roseHei=roseWid;
+    }
 
-//        int allWid;
-//        int allHei;
-//        allWid=cTable->width()+rScale->width()+roseWid+50;
-//        allHei=tScale->height()+roseHei+50;
-//        qDebug()<<roseWid<<roseHei<<allWid<<allHei;
-//        resize(allWid,allHei);   //一resize，就会降低到最小尺寸。。。为什么会强制缩小？
+    /// 终于勉强实现了这一个效果，但是仍然存在着问题
+    // 在左右上下单方面拖拉缩小将会不起作用，需要斜向缩小才能实现，问题未知
+    if(isRecorded==false)
+    {
+        diffWid=width()-roseWid;  //只想记录一次，但是resize的第一次的值总是不正确的
+        diffHei=height()-roseHei;
+        if(diffWid>0 && diffHei>0)
+        {
+            isRecorded=true;
+        }
+        else
+        {
+            isRecorded=false;
+        }
+    }
+
+    qDebug()<<roseWid<<roseHei<<diffWid<<diffHei;
+    /// 没有任何变化，因为的确没有变化，需要一个固定数值
+    resize(diffWid+roseWid, diffHei+roseHei);
 }
 
 void MainWindow::mouseMoveEvent(QMouseEvent */*event*/)

@@ -104,3 +104,9 @@ void topScale::setOffset(int min, int max)
     minOffset=min;
     maxOffset=max;
 }
+
+void topScale::resizeWithCircle(int wid, int hei)
+{
+//    resize(wid,height());  //只需改变宽度
+    /// 的确是更着走，但是界面不管，继续放大。。。。怎会如此无理
+}

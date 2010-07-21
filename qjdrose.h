@@ -92,6 +92,7 @@ signals:
     void sigCurrentMousePosX(int x);
     void sigCurrentMousePosY(int y);
     void sigCurrentData(int data);
+    void sigWidgetSize(int wid,int hei);
 };
 
 #endif // QJDROSE_H

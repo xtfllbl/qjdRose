@@ -27,6 +27,9 @@ private:
     Ui::MainWindow *ui;
     QLabel *statsLabel1;
 
+    int diffWid;
+    int diffHei;
+    bool isRecorded;
     void resizeEvent(QResizeEvent *);
     void mouseMoveEvent(QMouseEvent *);
 private slots:

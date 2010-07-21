@@ -450,17 +450,19 @@ void QJDRose::emitRange()
 void QJDRose::resizeEvent(QResizeEvent *)
 {
     /// 这个是增加了，但是主界面没有增加。。。
-    int roseWid=width();
-    int roseHei=height();
-    if(roseWid<roseHei)
-    {
-        roseHei=roseWid;
-    }
-    if(roseHei<roseWid)
-    {
-        roseWid=roseHei;
-    }
-    resize(roseWid,roseHei);
+    // 考虑与其他widget进行同步，主界面放弃教育
+//    int roseWid=width();
+//    int roseHei=height();
+//    if(roseWid<roseHei)
+//    {
+//        roseHei=roseWid;
+//    }
+//    if(roseHei<roseWid)
+//    {
+//        roseWid=roseHei;
+//    }
+//    emit sigWidgetSize(roseWid,roseHei);     //发送长宽，用于resize其他控件，其余的不用写在resizeEvent中，单单resize就可以了
+//    resize(roseWid,roseHei);
 }
 
 

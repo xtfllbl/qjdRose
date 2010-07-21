@@ -16,14 +16,18 @@ private:
     int length;
     int offset;
     float diameter;
+    int circleWidth;
+    int circleHeight;
 
     void paintEvent(QPaintEvent *);
+    void resizeEvent(QResizeEvent *);
     void setColorTable();
 signals:
 
 public slots:
     void setRange(int min, int max);
     void setLength(int len,int off);
+    void resizeWithCircle(int wid, int hei);
 
 };
 

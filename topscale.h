@@ -25,7 +25,7 @@ public slots:
     void setLength(int len,int off);
     void setPosLine(int x);
     void setOffset(int min,int max);
-
+    void resizeWithCircle(int wid,int hei);
 };
 
 #endif // TOPSCALE_H

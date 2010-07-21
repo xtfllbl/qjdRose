@@ -67,7 +67,7 @@ void rightScale::paintEvent(QPaintEvent *)
 
 void rightScale::setLength(int len,int off)
 {
-    qDebug()<<"right:: "<<len;
+//    qDebug()<<"right:: "<<len;
     length=len;
     offset=off;
     update();
@@ -105,4 +105,9 @@ void rightScale::setOffset(int min, int max)
 //    qDebug()<<"right setOffset";   //好像也没被执行
     minOffset=min;
     maxOffset=max;
+}
+
+void rightScale::resizeWithCircle(int wid, int hei)
+{
+//    resize(width(),hei);  //只需改变宽度
 }
