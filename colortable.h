@@ -13,6 +13,9 @@ private:
     QVector<QRgb> cTable;
     int minNum;
     int maxNum;
+    int length;
+    int offset;
+    float diameter;
 
     void paintEvent(QPaintEvent *);
     void setColorTable();
@@ -20,6 +23,7 @@ signals:
 
 public slots:
     void setRange(int min, int max);
+    void setLength(int len,int off);
 
 };
 

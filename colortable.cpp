@@ -8,6 +8,8 @@ colorTable::colorTable(QWidget *parent) :
     setColorTable();
     minNum=100000;
     maxNum=0;
+    length=0;
+    offset=0;
     setMaximumWidth(100);
     setMinimumWidth(100);
 }
@@ -26,10 +28,11 @@ void colorTable::paintEvent(QPaintEvent *)
     painter.drawRect(1,1,width()-2,height()-2);
 
     /// 画色表
-    // 居中显示比较好
+    // 最好和图形结合起来,起始位置什么的也都相同
     int colorValue;
     int wid=30;
-    int hei=int(height()/2);
+    diameter=(length*1.0/3)*2;
+    int hei=diameter;
     QImage imageTable(wid,hei,QImage::Format_ARGB32);
     imageTable.setColorTable(cTable);    //将颜色表附上
 
@@ -64,7 +67,7 @@ void colorTable::paintEvent(QPaintEvent *)
         startPos=40;
     }
 
-    int startHeight=height()/4;         //将色表定在中间位置
+    int startHeight=offset;         //将色表定在中间位置
     painter.drawImage(60,startHeight,imageTable);  // 定起始位置，画上去
     painter.drawRect(60,startHeight,wid,hei);        // 包围  drawRect ( int x, int y, int width, int height )
     for(int i=0;i<9;i++)
@@ -133,5 +136,12 @@ void colorTable::setColorTable()
         b = 0;
         cTable<<qRgb(r,g,b);
     }
+}
 
+void colorTable::setLength(int len,int off)
+{
+    qDebug()<<"color setLenth:: "<<len<<off;  //没有将这个和他们layout 在一起
+    length=len;
+    offset=off;
+    update();       //及时改变
 }

@@ -238,7 +238,7 @@ void QJDRose::paintEvent(QPaintEvent *)
     rUnit=radius*1.0/circleNumber;  //必须使用浮点，否则不准确
     int rUnitNum=int(radius/rUnit+1);  //加上最外圈,最外圈不再单独画
 
-    emit sigGetLength(length,offset);  /// 发送相关信息
+    emit sigGetLength(length,offset);  /// 发送相关信息,还不如直接给半径来的直接
     emit sigSetOffset(minOffset,maxOffset);
 
     circleMiddle.setX(radius+offset);

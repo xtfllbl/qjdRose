@@ -24,6 +24,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // 设置线段长度
     connect(rose,SIGNAL(sigGetLength(int,int)),rScale,SLOT(setLength(int,int)));
     connect(rose,SIGNAL(sigGetLength(int,int)),tScale,SLOT(setLength(int,int)));
+    connect(rose,SIGNAL(sigGetLength(int,int)),cTable,SLOT(setLength(int,int)));
     // 设置偏移距
     connect(rose,SIGNAL(sigSetOffset(int,int)),rScale,SLOT(setOffset(int,int)));
     connect(rose,SIGNAL(sigSetOffset(int,int)),tScale,SLOT(setOffset(int,int)));
@@ -37,14 +38,22 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(rose,SIGNAL(sigCurrentData(int)),this,SLOT(showData(int)));  //为何会引发这种问题, 知道了，因为没有重绘。。。
 
     // 进行布局
+    //    QGridLayout *gLayout=new QGridLayout();
+    //    gLayout->addWidget(tScale,0,1);
+    //    gLayout->addWidget(rScale,1,0);
+    //    gLayout->addWidget(rose,1,1);
+    //    QHBoxLayout *hLayout=new QHBoxLayout();
+    //    hLayout->addWidget(cTable);
+    //    hLayout->addLayout(gLayout);
+    //    ui->centralWidget->setLayout(hLayout);  //设置layout
+
     QGridLayout *gLayout=new QGridLayout();
-    gLayout->addWidget(tScale,0,1);
-    gLayout->addWidget(rScale,1,0);
-    gLayout->addWidget(rose,1,1);
-    QHBoxLayout *hLayout=new QHBoxLayout();
-    hLayout->addWidget(cTable);
-    hLayout->addLayout(gLayout);
-    ui->centralWidget->setLayout(hLayout);  //设置layout
+    gLayout->addWidget(tScale,0,2);
+    gLayout->addWidget(rScale,1,1);
+    gLayout->addWidget(rose,1,2);
+    gLayout->addWidget(cTable,1,0);
+    ui->centralWidget->setLayout(gLayout);  //设置layout
+
     setCentralWidget(ui->centralWidget);  //设置显示
 }
 

@@ -45,8 +45,8 @@ void rightScale::paintEvent(QPaintEvent *)
         // 想想如何谢坐标轴,we have min/maxOffset
         if(i!=3)
         {
-        painter.drawText(13, int(longLine*i+offset)+5, offsetText[i]);
-    }
+            painter.drawText(13, int(longLine*i+offset)+5, offsetText[i]);
+        }
         if(i==3)
         {
             painter.drawText(13, int(longLine*i+offset)+5,
@@ -62,12 +62,12 @@ void rightScale::paintEvent(QPaintEvent *)
         painter.drawLine(5, int(shortLine*i+offset), 7, int(shortLine*i+offset));
     }
 
-
     paintPosLine(&painter);
 }
 
 void rightScale::setLength(int len,int off)
 {
+    qDebug()<<"right:: "<<len;
     length=len;
     offset=off;
     update();
