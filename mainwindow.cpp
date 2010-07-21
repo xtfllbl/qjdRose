@@ -77,12 +77,15 @@ void MainWindow::resizeEvent(QResizeEvent *)
     /// 主要是不能小于总体尺寸，否则就会不给力。。。
     int roseWid=rose->width();
     int roseHei=rose->height();
-    if(roseWid<roseHei)
+    // 非常纠结的比大小,如何既能放大，又能缩小呢
+    // 彻底纠结，有时超出屏幕会自动缩小到屏幕可视范围，有时候不会。。。
+    if(roseWid<roseHei)  //应为小，所以取小的话永远不会放大。。。但是因为大，不取小，则永远不能缩小。。。必须要做取舍么？？？
     {
         roseWid=roseHei;
     }
     if(roseHei<roseWid)
     {
+//        roseWid=roseHei;        //这里翻一番看看效果,不行，处于不能放大的状态
         roseHei=roseWid;
     }
 
