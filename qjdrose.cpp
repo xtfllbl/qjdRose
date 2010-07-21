@@ -3,30 +3,36 @@
 
 #include "math.h"
 #define PAI 3.1415926
-#define CIRCLE 15
-#define ANGLE 16   //这个一大会出问题？？
-// 在此类中手动做出玫瑰图
+//#define CIRCLE 15     //offset
+//#define ANGLE 16   //azimuth
+
+/// TODO:
+/// 1.数据改变网格之后显示有问题
+/// 2.实验窗口缩小的方法。。。
 QJDRose::QJDRose(QWidget *)
 {
-    //    setMouseTracking(true);
-    setPalette(Qt::white);  // 无用
     circleNumber=0;
     angleLineNumber=0;
+    setOffsetUnit(15);
+    setAzimuthUnit(16);
+    //    setMouseTracking(true);
+    setPalette(Qt::white);  // 无用
+
     offset=0;
     innerCircle=-2;
 
-    originUnitData.resize(CIRCLE);
-    for(int i=0;i<CIRCLE;i++)
-        originUnitData[i].resize(ANGLE);
-    for(int i=0;i<CIRCLE;i++)
-        for(int j=0;j<ANGLE;j++)
+    originUnitData.resize(circleNumber);
+    for(int i=0;i<circleNumber;i++)
+        originUnitData[i].resize(angleLineNumber);
+    for(int i=0;i<circleNumber;i++)
+        for(int j=0;j<angleLineNumber;j++)
             originUnitData[i][j]=0;
 
-    colorUnitData.resize(CIRCLE);
-    for(int i=0;i<CIRCLE;i++)
-        colorUnitData[i].resize(ANGLE);
-    for(int i=0;i<CIRCLE;i++)
-        for(int j=0;j<ANGLE;j++)
+    colorUnitData.resize(circleNumber);
+    for(int i=0;i<circleNumber;i++)
+        colorUnitData[i].resize(angleLineNumber);
+    for(int i=0;i<circleNumber;i++)
+        for(int j=0;j<angleLineNumber;j++)
             colorUnitData[i][j]=0;
 
     setColorTable();
@@ -84,8 +90,8 @@ void QJDRose::setOaData()
 
 void QJDRose::setData()
 {
-    circleNumber=CIRCLE;    //10
-    angleLineNumber=ANGLE;    //16
+//    circleNumber=CIRCLE;    // already be setted
+//    angleLineNumber=ANGLE;    //16
 
     /// 新加处理
     // -------------------归类-------------------- //
@@ -701,4 +707,14 @@ void QJDRose::paintCurrentUnit(QPainter *painter)
 
         painter->drawPath(path3);
     }
+}
+
+void QJDRose::setOffsetUnit(int unit)
+{
+    circleNumber=unit;
+}
+
+void QJDRose::setAzimuthUnit(int unit)
+{
+    angleLineNumber=unit;
 }

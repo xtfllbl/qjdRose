@@ -92,7 +92,7 @@ void MainWindow::resizeEvent(QResizeEvent *)
         }
     }
 
-    qDebug()<<roseWid<<roseHei<<diffWid<<diffHei;
+    //    qDebug()<<roseWid<<roseHei<<diffWid<<diffHei;
     /// 没有任何变化，因为的确没有变化，需要一个固定数值
     resize(diffWid+roseWid, diffHei+roseHei);
 }

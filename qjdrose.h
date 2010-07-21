@@ -84,6 +84,8 @@ private:
     void setData();
     void setOaData();
     void setData2();
+    void setOffsetUnit(int);
+    void setAzimuthUnit(int);
 signals:
     void sigGetRange(int min,int max);
     void sigGetLength(int len,int offset);
