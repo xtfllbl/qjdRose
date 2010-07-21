@@ -15,7 +15,7 @@ rightScale::rightScale(QWidget *parent) :
 void rightScale::paintEvent(QPaintEvent *)
 {
     QPainter painter(this);
-    painter.drawRect(1,1,width()-2,height()-2);
+    painter.drawRect(0,0,width()-2,height()-2);
 
      diameter=(length*1.0/3)*2;   //使用float，最大限度减少误差
     painter.drawLine(5, offset, 5, int(diameter+offset));  // 对应圆圈的高度
@@ -75,13 +75,13 @@ void rightScale::setLength(int len,int off)
 
 void rightScale::setPosLine(int y)
 {
-    if(y>diameter+offset)
+    if(y>diameter+offset)  //大于范围
     {
-        mouseY=int(diameter+offset);
+        mouseY=-1;
     }
-    if(y<offset)
+    if(y<offset)  //小于范围
     {
-        mouseY=offset;
+        mouseY=-1;
     }
     if(y>=offset && y<=(diameter+offset))
     {
@@ -97,7 +97,10 @@ void rightScale::paintPosLine(QPainter *painter)
     pen.setColor(Qt::red);
     pen.setWidth(3);
     painter->setPen(pen);
-    painter->drawLine(5,mouseY,15,mouseY);
+    if(mouseY!=-1)
+    {
+        painter->drawLine(5,mouseY,15,mouseY);
+    }
 }
 
 void rightScale::setOffset(int min, int max)

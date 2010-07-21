@@ -449,7 +449,7 @@ void QJDRose::emitRange()
 
 void QJDRose::resizeEvent(QResizeEvent *)
 {
-    /// 这个是增加了，但是主界面没有增加。。。
+    /// 此处不做处理，在主界面进行统一处理
     // 考虑与其他widget进行同步，主界面放弃教育
 //    int roseWid=width();
 //    int roseHei=height();

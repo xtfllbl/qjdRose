@@ -16,7 +16,7 @@ topScale::topScale(QWidget *parent) :
 void topScale::paintEvent(QPaintEvent *)
 {
     QPainter painter(this);
-    painter.drawRect(1,1,width()-2,height()-2);
+    painter.drawRect(0,0,width()-1,height()-1);
 
      diameter=(length/3)*2;   /// 我擦，这是直径
     painter.drawLine(offset, 5, int(diameter+offset), 5);  // 对应圆圈的长度
@@ -76,11 +76,11 @@ void topScale::setPosLine(int x)
     // 注意不要超出范围
     if(x>(diameter+offset))
     {
-        mouseX=int(diameter+offset);
+        mouseX=-1;
     }
     if(x<offset)
     {
-        mouseX=offset;
+        mouseX=-1;
     }
     if(x>=offset && x<=(diameter+offset))
     {
@@ -95,7 +95,10 @@ void topScale::paintPosLine(QPainter *painter)
     pen.setColor(Qt::red);
     pen.setWidth(3);
     painter->setPen(pen);
-    painter->drawLine(mouseX,5,mouseX,15);
+    if(mouseX!=-1)
+    {
+        painter->drawLine(mouseX,5,mouseX,15);
+    }
 }
 
 void topScale::setOffset(int min, int max)

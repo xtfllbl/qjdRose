@@ -25,7 +25,7 @@ void colorTable::paintEvent(QPaintEvent *)
 {
     /// 需要设置和大小连动
     QPainter painter(this);
-    painter.drawRect(1,1,width()-2,height()-2);
+//    painter.drawRect(1,1,width()-2,height()-2);
 
     /// 画色表
     // 最好和图形结合起来,起始位置什么的也都相同
