@@ -57,20 +57,6 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::on_actionZoomIn_triggered()  //放大
-{
-//    rose->getCurrentPosData();
-//    rose->resize(rose->width()+100,rose->height()+100);
-}
-
-void MainWindow::on_actionZoomOut_triggered()  //缩小
-{
-//    if(rose->width()>100 && rose->height()>100)  //小于100不缩小了
-//    {
-//        rose->resize(rose->width()-100,rose->height()-100);
-//    }
-}
-
 void MainWindow::resizeEvent(QResizeEvent *)
 {
     /// resize含有诸多问题，无法实现
@@ -79,6 +65,7 @@ void MainWindow::resizeEvent(QResizeEvent *)
     int roseHei=rose->height();
     // 非常纠结的比大小,如何既能放大，又能缩小呢
     // 彻底纠结，有时超出屏幕会自动缩小到屏幕可视范围，有时候不会。。。
+    /// 需要解决不能缩小的问题。。。做一个按钮单独缩小？
     if(roseWid<roseHei)  //应为小，所以取小的话永远不会放大。。。但是因为大，不取小，则永远不能缩小。。。必须要做取舍么？？？
     {
         roseWid=roseHei;
@@ -125,4 +112,9 @@ void MainWindow::showData(int data)
     {
         statsLabel1->setText("Standby");
     }
+}
+
+void MainWindow::on_actionResize_triggered()
+{
+    resize(480, 480);   //强行减至最小
 }

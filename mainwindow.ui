@@ -37,18 +37,15 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionZoomIn"/>
-   <addaction name="actionZoomOut"/>
+   <addaction name="actionResize"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
-  <action name="actionZoomIn">
+  <action name="actionResize">
    <property name="text">
-    <string>zoomIn</string>
+    <string>Resize</string>
    </property>
-  </action>
-  <action name="actionZoomOut">
-   <property name="text">
-    <string>zoomOut</string>
+   <property name="toolTip">
+    <string>resize to normal size</string>
    </property>
   </action>
  </widget>
