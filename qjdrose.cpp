@@ -11,13 +11,9 @@
 /// 2.实验窗口缩小的方法。。。
 QJDRose::QJDRose(QWidget *)
 {
-//    circleNumber=0;  //没必要初始化了
-//    angleLineNumber=0;
-    setOffsetUnit(15);
-    setAzimuthUnit(16);
-    //    setMouseTracking(true);
+    setOffsetUnit(30);    //15, 此项数值越高，图像就趋向于圆形，估计int那套限制了图像
+    setAzimuthUnit(36);   //16，此项数值提高，图像归位不正确，发生非常奇特的现象，都归于左侧x轴上放处
     setPalette(Qt::white);  // 无用
-
     offset=0;
     innerCircle=-2;
 
@@ -90,8 +86,8 @@ void QJDRose::setOaData()
 
 void QJDRose::setData()
 {
-    // -------------------归类-------------------- //
-    // 网格划分
+    /// -------------------归类-------------------- //
+    // 网格划分,这一部分目前有隐藏的毛病
     float offsetUnitLength;
     float azimuthUnitLength;
     int gridX;
@@ -101,21 +97,22 @@ void QJDRose::setData()
     azimuthUnitLength=(maxAzimuth-minAzimuth)/angleLineNumber;
     for(int i=0;i<offsetData.size();i++)
     {
+        // 减去最小值，除以网格长度，就能得到所处网格了
         gridX=ceil((offsetData[i]-minOffset)/offsetUnitLength)-1;
-        if(gridX>10)
-            gridX=10;
+        if(gridX>circleNumber)   //直接被害死，值定死害死人阿
+            gridX=circleNumber;
         if(gridX<0)
             gridX=0;
         gridY=ceil((azimuthData[i]-minAzimuth)/azimuthUnitLength)-1;
-        if(gridY>15)
-            gridY=15;
+        if(gridY>angleLineNumber)
+            gridY=angleLineNumber;
         if(gridY<0)
             gridY=0;
 
         originUnitData[gridX][gridY]++;
     }
 
-    /// 找到转换后数字的最大
+    /// --------------找到转换后数字的最大---------- ///
      maxOriginUnit=0;
      minOriginUnit=1000000;
     int cutNum=0;
@@ -143,13 +140,13 @@ void QJDRose::setData()
             if(originUnitData[i][j]!=0)
             {
                 //不许大于255
-                colorUnitData[i][j]=ceil(originUnitData[i][j]/(cutNum+1));
+                colorUnitData[i][j]=ceil(originUnitData[i][j]*1.0/(cutNum+1));
             }
         }
+        qDebug()<<"origin:: "<<i<<originUnitData[i];
+        qDebug()<<"color:: "<<i<<colorUnitData[i];
+        qDebug()<<"cutNum:: "<<cutNum<<"~~~~~~~~~";
     }
-    qDebug()<<originUnitData;
-    qDebug()<<"cutNum:: "<<cutNum;
-    qDebug()<<colorUnitData;
 }
 
 // 废弃状态
