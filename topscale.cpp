@@ -6,7 +6,7 @@ topScale::topScale(QWidget *parent) :
 {
     setMaximumHeight(50);  //用不着这么宽
     setMinimumHeight(50);
-    length=0;
+    radius=0;
     offset=0;
     minOffset=0;
     maxOffset=0;
@@ -18,7 +18,7 @@ void topScale::paintEvent(QPaintEvent *)
     QPainter painter(this);
     painter.drawRect(0,0,width()-1,height()-1);
 
-     diameter=(length/3)*2;   /// 我擦，这是直径
+    diameter=radius*2;   /// 我擦，这是直径
     painter.drawLine(offset, 5, int(diameter+offset), 5);  // 对应圆圈的长度
 
     /// 刻度
@@ -64,9 +64,9 @@ void topScale::paintEvent(QPaintEvent *)
     paintPosLine(&painter);
 }
 
-void topScale::setLength(int len,int off)
+void topScale::setLength(int rad,int off)
 {
-    length=len;
+    radius=rad;
     offset=off;
     update();
 }

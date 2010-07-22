@@ -10,7 +10,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     rose=new QJDRose();
 //    rose->setPalette(Qt::white);  //仍然无用
-    rose->setOffsetUnit(30);
+    rose->setOffsetUnit(15);
     rose->setAzimuthUnit(36);
     rose->start();
 

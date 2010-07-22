@@ -6,7 +6,7 @@ rightScale::rightScale(QWidget *parent) :
 {
     setMaximumWidth(70);  //用不着这么宽
     setMinimumWidth(70);
-    length=0;
+    radius=0;
     offset=0;
     minOffset=0;
     maxOffset=0;
@@ -17,7 +17,7 @@ void rightScale::paintEvent(QPaintEvent *)
     QPainter painter(this);
     painter.drawRect(0,0,width()-2,height()-2);
 
-     diameter=(length*1.0/3)*2;   //使用float，最大限度减少误差
+     diameter=radius*2;   //使用float，最大限度减少误差
     painter.drawLine(5, offset, 5, int(diameter+offset));  // 对应圆圈的高度
 
     /// 刻度 & 坐标
@@ -65,10 +65,10 @@ void rightScale::paintEvent(QPaintEvent *)
     paintPosLine(&painter);
 }
 
-void rightScale::setLength(int len,int off)
+void rightScale::setLength(int rad,int off)
 {
 //    qDebug()<<"right:: "<<len;
-    length=len;
+    radius=rad;
     offset=off;
     update();
 }

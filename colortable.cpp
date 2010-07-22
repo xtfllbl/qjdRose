@@ -8,7 +8,7 @@ colorTable::colorTable(QWidget *parent) :
     setColorTable();
     minNum=100000;
     maxNum=0;
-    length=0;
+    radius=0;
     offset=0;
     setMaximumWidth(100);
     setMinimumWidth(100);
@@ -31,7 +31,7 @@ void colorTable::paintEvent(QPaintEvent *)
     // 最好和图形结合起来,起始位置什么的也都相同
     int colorValue;
     int wid=30;
-    diameter=(length*1.0/3)*2;
+    diameter=radius*2;
     int hei=diameter;
     QImage imageTable(wid,hei,QImage::Format_ARGB32);
     imageTable.setColorTable(cTable);    //将颜色表附上
@@ -138,10 +138,10 @@ void colorTable::setColorTable()
     }
 }
 
-void colorTable::setLength(int len,int off)
+void colorTable::setLength(int rad,int off)
 {
 //    qDebug()<<"color setLenth:: "<<len<<off;  //没有将这个和他们layout 在一起
-    length=len;
+    radius=rad;
     offset=off;
     update();       //及时改变
 }

@@ -11,7 +11,7 @@ class rightScale : public QWidget
 public:
     explicit rightScale(QWidget *parent = 0);
 
-    int length;
+    int radius;
     int offset;
     int mouseY;
     float diameter;
@@ -24,7 +24,7 @@ private:
 signals:
 
 public slots:
-    void setLength(int len,int off);
+    void setLength(int rad,int off);
     void setPosLine(int y);
     void setOffset(float min, float max);
     void resizeWithCircle(int wid, int hei);

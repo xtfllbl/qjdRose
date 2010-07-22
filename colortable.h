@@ -13,7 +13,7 @@ private:
     QVector<QRgb> cTable;
     int minNum;
     int maxNum;
-    int length;
+    int radius;
     int offset;
     float diameter;
     int circleWidth;
@@ -26,7 +26,7 @@ signals:
 
 public slots:
     void setRange(int min, int max);
-    void setLength(int len,int off);
+    void setLength(int rad,int off);
     void resizeWithCircle(int wid, int hei);
 
 };

@@ -184,12 +184,12 @@ void QJDRose::paintEvent(QPaintEvent *)
 
         offset=length/8;  //偏移
         int more=10;        //适当添加一些余量
-        radius=length/3;
+        radius=(length/4)*1.5;  //  三分之四左右差不多，不至于太多空洞感
         kUnit=(2*PAI/angleLineNumber);  //整个圆除以需要分割的数量，得到每根斜线需要旋转的斜率
         rUnit=radius*1.0/circleNumber;  //必须使用浮点，否则不准确
         int rUnitNum=int(radius/rUnit+1);  //加上最外圈,最外圈不再单独画
 
-        emit sigGetLength(length,offset);  /// 发送相关信息,还不如直接给半径来的直接
+        emit sigGetLength(radius,offset);  /// 发送相关信息,还不如直接给半径来的直接
         emit sigSetOffset(minOffset,maxOffset);
 
         circleMiddle.setX(radius+offset);
@@ -589,10 +589,8 @@ void QJDRose::paintCurrentUnit(QPainter *painter)
 
 void QJDRose::paintAngle(QPainter *painter)
 {
-    /// 写角度,此处需要重新写
-    // 先在远处画一个圆然后计算回来云云
     // 整体定位感觉稍好
-//    painter->drawEllipse(circleMiddle,radius+30,radius+30);  //用来定位的圆圈
+    //    painter->drawEllipse(circleMiddle,radius+30,radius+30);  //用来定位的圆圈
     QString angleText;
     QPointF writePos;
     for(int i=0;i<angleLineNumber;i++)
@@ -602,7 +600,7 @@ void QJDRose::paintAngle(QPainter *painter)
         x=-x;
         y=-y;
 
-        float angleNum=360*1.0/angleLineNumber*i;  //先准确计算，然后模糊显示
+        float angleNum=360*1.0/angleLineNumber*i;
         int showNum=int(angleNum);
         angleText=QString::number(showNum);
         writePos.setX(radius+offset+x);
