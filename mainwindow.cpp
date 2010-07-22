@@ -9,11 +9,14 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->setupUi(this);
     rose=new QJDRose();
-    rose->setPalette(Qt::white);  //仍然无用
+//    rose->setPalette(Qt::white);  //仍然无用
+    rose->setOffsetUnit(30);
+    rose->setAzimuthUnit(36);
+    rose->start();
+
     cTable=new colorTable();
     rScale=new rightScale();
     tScale=new topScale();
-
     statsLabel1=new QLabel();
     statsLabel1->setMinimumWidth(100);
     statsLabel1->setText("Let`s begin");

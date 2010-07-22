@@ -11,7 +11,8 @@ public:
     QJDRose(QWidget *parent = 0);
     void emitRange();  //手动在connect完毕后发送信号
     void getCurrentPosData();
-
+    void setOffsetUnit(int);
+    void setAzimuthUnit(int);
 private:
     QJDObservationAttribute oa;
     int radius;
@@ -74,18 +75,17 @@ private:
     int angleLine1ID;
     int angleLine2;
     int angleLine2ID;
+    bool isStarted;
 
     void paintEvent(QPaintEvent *);
     void paintCurrentUnit(QPainter *painter);
-
     void resizeEvent(QResizeEvent *);
     void mouseMoveEvent(QMouseEvent *);
     void setColorTable();
     void setData();
     void setOaData();
     void setData2();
-    void setOffsetUnit(int);
-    void setAzimuthUnit(int);
+
 signals:
     void sigGetRange(int min,int max);
     void sigGetLength(int len,int offset);
@@ -95,6 +95,8 @@ signals:
     void sigCurrentMousePosY(int y);
     void sigCurrentData(int data);
     void sigWidgetSize(int wid,int hei);
+public slots:
+    void start();
 };
 
 #endif // QJDROSE_H

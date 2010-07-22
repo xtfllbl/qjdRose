@@ -11,31 +11,23 @@
 /// 2.实验窗口缩小的方法。。。
 QJDRose::QJDRose(QWidget *)
 {
-    setOffsetUnit(30);    //15, 此项数值越高，图像就趋向于圆形，估计int那套限制了图像
-    setAzimuthUnit(36);   //16，此项数值提高，图像归位不正确，发生非常奇特的现象，都归于左侧x轴上放处
+    //    setOffsetUnit(30);   //无法让外部来得及调用
+    //    setAzimuthUnit(36);
     setPalette(Qt::white);  // 无用
     offset=0;
     innerCircle=-2;
 
-    originUnitData.resize(circleNumber);
-    for(int i=0;i<circleNumber;i++)
-        originUnitData[i].resize(angleLineNumber);
-    for(int i=0;i<circleNumber;i++)
-        for(int j=0;j<angleLineNumber;j++)
-            originUnitData[i][j]=0;
-
-    colorUnitData.resize(circleNumber);
-    for(int i=0;i<circleNumber;i++)
-        colorUnitData[i].resize(angleLineNumber);
-    for(int i=0;i<circleNumber;i++)
-        for(int j=0;j<angleLineNumber;j++)
-            colorUnitData[i][j]=0;
-
     setColorTable();
-    setOaData();
-    setData();
+    isStarted=false;
     setMinimumSize(400,400);
     setMaximumSize(2000,2000);  //因为需要扩充，照顾layout
+}
+
+void QJDRose::start()
+{
+    setOaData();
+    setData();
+    isStarted=true;
 }
 
 void QJDRose::setOaData()
@@ -86,6 +78,19 @@ void QJDRose::setOaData()
 
 void QJDRose::setData()
 {
+    originUnitData.resize(circleNumber);
+    for(int i=0;i<circleNumber;i++)
+        originUnitData[i].resize(angleLineNumber);
+    for(int i=0;i<circleNumber;i++)
+        for(int j=0;j<angleLineNumber;j++)
+            originUnitData[i][j]=0;
+
+    colorUnitData.resize(circleNumber);
+    for(int i=0;i<circleNumber;i++)
+        colorUnitData[i].resize(angleLineNumber);
+    for(int i=0;i<circleNumber;i++)
+        for(int j=0;j<angleLineNumber;j++)
+            colorUnitData[i][j]=0;
     /// -------------------归类-------------------- //
     // 网格划分,这一部分目前有隐藏的毛病
     float offsetUnitLength;
@@ -98,12 +103,12 @@ void QJDRose::setData()
     for(int i=0;i<offsetData.size();i++)
     {
         // 减去最小值，除以网格长度，就能得到所处网格了
-        gridX=ceil((offsetData[i]-minOffset)/offsetUnitLength)-1;
+        gridX=int(ceil((offsetData[i]-minOffset)/offsetUnitLength)-1);
         if(gridX>circleNumber)   //直接被害死，值定死害死人阿
             gridX=circleNumber;
         if(gridX<0)
             gridX=0;
-        gridY=ceil((azimuthData[i]-minAzimuth)/azimuthUnitLength)-1;
+        gridY=int(ceil((azimuthData[i]-minAzimuth)/azimuthUnitLength)-1);
         if(gridY>angleLineNumber)
             gridY=angleLineNumber;
         if(gridY<0)
@@ -113,8 +118,8 @@ void QJDRose::setData()
     }
 
     /// --------------找到转换后数字的最大---------- ///
-     maxOriginUnit=0;
-     minOriginUnit=1000000;
+    maxOriginUnit=0;
+    minOriginUnit=1000000;
     int cutNum=0;
     for(int i=0;i<circleNumber;i++)
     {
@@ -130,9 +135,9 @@ void QJDRose::setData()
             }
         }
     }
-//    emit sigGetRange(minOriginUnit,maxOriginUnit);  //发出信号，让colorTable类能接受到,比connect还要早
+    //    emit sigGetRange(minOriginUnit,maxOriginUnit);  //发出信号，让colorTable类能接受到,比connect还要早
 
-    cutNum=ceil(maxOriginUnit/255);
+    cutNum=int(ceil(maxOriginUnit/255));
     for(int i=0;i<circleNumber;i++)
     {
         for(int j=0;j<angleLineNumber;j++)
@@ -140,12 +145,12 @@ void QJDRose::setData()
             if(originUnitData[i][j]!=0)
             {
                 //不许大于255
-                colorUnitData[i][j]=ceil(originUnitData[i][j]*1.0/(cutNum+1));
+                colorUnitData[i][j]=int(ceil(originUnitData[i][j]*1.0/(cutNum+1)));
             }
         }
-        qDebug()<<"origin:: "<<i<<originUnitData[i];
-        qDebug()<<"color:: "<<i<<colorUnitData[i];
-        qDebug()<<"cutNum:: "<<cutNum<<"~~~~~~~~~";
+        //        qDebug()<<"origin:: "<<i<<originUnitData[i];
+        //        qDebug()<<"color:: "<<i<<colorUnitData[i];
+        //        qDebug()<<"cutNum:: "<<cutNum<<"~~~~~~~~~";
     }
 }
 
@@ -212,175 +217,178 @@ void QJDRose::setData2()
 /// 需要调整一下画法，因为是从顶头开始并且顺时针，默认是逆时针，所以要取负值
 void QJDRose::paintEvent(QPaintEvent *)
 {
-    QPainter painter(this);
-    painter.setRenderHint(QPainter::Antialiasing); //抗锯齿
-    painter.drawRect(1,1,width()-2,height()-2);
-
-    length=0;
-    if(width()<height())  /// 确保画出来的是圆而且不超出范围
+    if(isStarted==true)
     {
-        length=width();
-    }
-    if(height()<width())
-    {
-        length=height();
-    }
-    if(width()==height())
-    {
-        length=width();
-    }
+        QPainter painter(this);
+        painter.setRenderHint(QPainter::Antialiasing); //抗锯齿
+        painter.drawRect(1,1,width()-2,height()-2);
 
-    offset=length/8;  //偏移
-    int more=10;        //适当添加一些余量
-    radius=length/3;
-    kUnit=(2*PAI/angleLineNumber);  //整个圆除以需要分割的数量，得到每根斜线需要旋转的斜率
-    rUnit=radius*1.0/circleNumber;  //必须使用浮点，否则不准确
-    int rUnitNum=int(radius/rUnit+1);  //加上最外圈,最外圈不再单独画
-
-    emit sigGetLength(length,offset);  /// 发送相关信息,还不如直接给半径来的直接
-    emit sigSetOffset(minOffset,maxOffset);
-
-    circleMiddle.setX(radius+offset);
-    circleMiddle.setY(radius+offset);
-
-    /// 填充网格
-    /// 从0度顺时针绘图,success
-    /// 在此，需要把所有的坐标保存下来，用于鼠标操作
-    turnAngleDegree=-360*1.0/angleLineNumber;     //顺时针
-    pointDataX.resize(circleNumber);
-    pointDataY.resize(circleNumber);
-    radiusData.resize(circleNumber);
-    minRadius=1000000;
-    maxRadius=0;
-    for(int i=0;i<circleNumber;i++)  //圈圈
-    {
-        pointDataX[i].resize(angleLineNumber);
-        pointDataY[i].resize(angleLineNumber);
-        radiusData[i]=int(radius -rUnit*i);  //记录半径
-        if(radiusData[i]<minRadius)
+        length=0;
+        if(width()<height())  /// 确保画出来的是圆而且不超出范围
         {
-            minRadius=radiusData[i];  //记录半径最小值
-            minRadiusID=i;
+            length=width();
         }
-        if(radiusData[i]>maxRadius)
+        if(height()<width())
         {
-            maxRadius=radiusData[i];  //记录半径最小值
-            maxRadiusID=i;
+            length=height();
         }
-        for(int j=0;j<angleLineNumber;j++) //斜斜
+        if(width()==height())
         {
-            QBrush brush(colorTable[ colorUnitData[i][j] ]);   // colorData must <=255, otherwise pro will broken
-            double x=(radius -rUnit*i)*cos(PAI/2+kUnit*j);
-            double y=(radius -rUnit*i)*sin(PAI/2+kUnit*j);
-            x=-x;  //x倒一下, y不要倒
+            length=width();
+        }
+
+        offset=length/8;  //偏移
+        int more=10;        //适当添加一些余量
+        radius=length/3;
+        kUnit=(2*PAI/angleLineNumber);  //整个圆除以需要分割的数量，得到每根斜线需要旋转的斜率
+        rUnit=radius*1.0/circleNumber;  //必须使用浮点，否则不准确
+        int rUnitNum=int(radius/rUnit+1);  //加上最外圈,最外圈不再单独画
+
+        emit sigGetLength(length,offset);  /// 发送相关信息,还不如直接给半径来的直接
+        emit sigSetOffset(minOffset,maxOffset);
+
+        circleMiddle.setX(radius+offset);
+        circleMiddle.setY(radius+offset);
+
+        /// 填充网格
+        /// 从0度顺时针绘图,success
+        /// 在此，需要把所有的坐标保存下来，用于鼠标操作
+        turnAngleDegree=-360*1.0/angleLineNumber;     //顺时针
+        pointDataX.resize(circleNumber);
+        pointDataY.resize(circleNumber);
+        radiusData.resize(circleNumber);
+        minRadius=1000000;
+        maxRadius=0;
+        for(int i=0;i<circleNumber;i++)  //圈圈
+        {
+            pointDataX[i].resize(angleLineNumber);
+            pointDataY[i].resize(angleLineNumber);
+            radiusData[i]=int(radius -rUnit*i);  //记录半径
+            if(radiusData[i]<minRadius)
+            {
+                minRadius=radiusData[i];  //记录半径最小值
+                minRadiusID=i;
+            }
+            if(radiusData[i]>maxRadius)
+            {
+                maxRadius=radiusData[i];  //记录半径最小值
+                maxRadiusID=i;
+            }
+            for(int j=0;j<angleLineNumber;j++) //斜斜
+            {
+                QBrush brush(colorTable[ colorUnitData[i][j] ]);   // colorData must <=255, otherwise pro will broken
+                double x=(radius -rUnit*i)*cos(PAI/2+kUnit*j);
+                double y=(radius -rUnit*i)*sin(PAI/2+kUnit*j);
+                x=-x;  //x倒一下, y不要倒
+                y=-y;
+                QPainterPath toFillPath;
+                toFillPath.moveTo(radius+offset, radius+offset);  //移动到圆心
+                pointDataX[i][j]=int(radius+offset+x);  //保存记录
+                pointDataY[i][j]=int(radius+offset+y);
+                toFillPath.lineTo(radius+offset+x,radius+offset+y);     // 调节线段长,此项很重要，需要记录
+                /// arcTo ( qreal x, qreal y, qreal width, qreal height, qreal startAngle, qreal sweepLength )
+                toFillPath.arcTo(offset+rUnit*i, offset+rUnit*i, (radius -rUnit*i)*2, (radius -rUnit*i)*2,
+                                 j*turnAngleDegree+90, turnAngleDegree);  /// 此项注意要改长度和角度
+                toFillPath.closeSubpath();
+                painter.fillPath(toFillPath,brush);
+            }
+        }
+        /// 基本框架
+        // 半径为长宽最小值的一半
+        QPen pen;
+        pen.setColor(Qt::black);
+        painter.setPen(pen);
+
+        painter.drawLine(offset-more,radius+offset,
+                         radius*2+offset+more,radius+offset);
+        painter.drawLine(radius+offset,offset-more,
+                         radius+offset,radius*2+offset+more);
+
+        /// 一圈圈
+        for(int i=0; i<rUnitNum; i++)
+        {
+            painter.drawEllipse(circleMiddle,rUnit*i,rUnit*i);
+        }
+        /// 一条条斜线,需要改变
+        angleLineK.resize(angleLineNumber);  //存储斜率
+        for(int i=0;i<angleLineNumber;i++)
+        {
+            double x=radius*cos(PAI/2+kUnit*i);
+            double y=radius*sin(PAI/2+kUnit*i);
+            x=-x;
             y=-y;
-            QPainterPath toFillPath;
-            toFillPath.moveTo(radius+offset, radius+offset);  //移动到圆心
-            pointDataX[i][j]=int(radius+offset+x);  //保存记录
-            pointDataY[i][j]=int(radius+offset+y);
-            toFillPath.lineTo(radius+offset+x,radius+offset+y);     // 调节线段长,此项很重要，需要记录
-            /// arcTo ( qreal x, qreal y, qreal width, qreal height, qreal startAngle, qreal sweepLength )
-            toFillPath.arcTo(offset+rUnit*i, offset+rUnit*i, (radius -rUnit*i)*2, (radius -rUnit*i)*2,
-                             j*turnAngleDegree+90, turnAngleDegree);  /// 此项注意要改长度和角度
-            toFillPath.closeSubpath();
-            painter.fillPath(toFillPath,brush);
+            painter.drawLine(int(radius+offset), int(radius+offset),
+                             int(radius+offset+x), int(radius+offset+y));
+            float k=y/x;
+            if(angleLineNumber<1 && ((y/x)>50 || (y/x)<-50))
+            {
+                k=-1000;
+            }
+            if(angleLineNumber>1 && ((y/x)>50 || (y/x)<-50))
+            {
+                k=1000;
+            }
+            angleLineK[i]=k;
         }
-    }
-    /// 基本框架
-    // 半径为长宽最小值的一半
-    QPen pen;
-    pen.setColor(Qt::black);
-    painter.setPen(pen);
+        angleLineK<<1000;  // 在最后加上无穷大，以便判断
+        /// 写角度
+        QString angleText;
+        QPointF writePos;
+        /// 应当从90度开始写
+        for(int i=0;i<angleLineNumber;i++)
+        {
+            double x=radius*cos(PAI/2+kUnit*i);
+            double y=radius*sin(PAI/2+kUnit*i);
+            x=-x;
+            y=-y;
 
-    painter.drawLine(offset-more,radius+offset,
-                     radius*2+offset+more,radius+offset);
-    painter.drawLine(radius+offset,offset-more,
-                     radius+offset,radius*2+offset+more);
+            float angleNum=360*1.0/angleLineNumber*i;  //先准确计算，然后模糊显示
+            int showNum=int(angleNum);
+            angleText=QString::number(showNum);
+            writePos.setX(radius+offset+x);
+            writePos.setY(radius+offset+y);
 
-    /// 一圈圈
-    for(int i=0; i<rUnitNum; i++)
-    {
-        painter.drawEllipse(circleMiddle,rUnit*i,rUnit*i);
-    }
-    /// 一条条斜线,需要改变
-    angleLineK.resize(angleLineNumber);  //存储斜率
-    for(int i=0;i<angleLineNumber;i++)
-    {
-        double x=radius*cos(PAI/2+kUnit*i);
-        double y=radius*sin(PAI/2+kUnit*i);
-        x=-x;
-        y=-y;
-        painter.drawLine(int(radius+offset), int(radius+offset),
-                         int(radius+offset+x), int(radius+offset+y));
-        float k=y/x;
-        if(angleLineNumber<1 && ((y/x)>50 || (y/x)<-50))
-        {
-            k=-1000;
+            QString zero="0";
+            painter.drawText(radius+offset+2, offset-2, zero);
+            if((angleNum>0 && angleNum<=90))
+            {
+                painter.drawText(int(writePos.x()+3), int(writePos.y()), angleText);
+            }
+            if (angleNum>90 && angleNum<=180)
+            {
+                painter.drawText(int(writePos.x()), int(writePos.y()+15), angleText);
+            }
+            if (angleNum>180 && angleNum<=270)
+            {
+                painter.drawText(int(writePos.x()-27), int(writePos.y()+15), angleText);  //适当调整
+            }
+            if (angleNum>270 && angleNum<=360)
+            {
+                painter.drawText(int(writePos.x()-30), int(writePos.y()), angleText);
+            }
         }
-        if(angleLineNumber>1 && ((y/x)>50 || (y/x)<-50))
-        {
-            k=1000;
-        }
-        angleLineK[i]=k;
-    }
-    angleLineK<<1000;  // 在最后加上无穷大，以便判断
-    /// 写角度
-    QString angleText;
-    QPointF writePos;
-    /// 应当从90度开始写
-    for(int i=0;i<angleLineNumber;i++)
-    {
-        double x=radius*cos(PAI/2+kUnit*i);
-        double y=radius*sin(PAI/2+kUnit*i);
-        x=-x;
-        y=-y;
 
-        float angleNum=360*1.0/angleLineNumber*i;  //先准确计算，然后模糊显示
-        int showNum=int(angleNum);
-        angleText=QString::number(showNum);
-        writePos.setX(radius+offset+x);
-        writePos.setY(radius+offset+y);
-
-        QString zero="0";
-        painter.drawText(radius+offset+2, offset-2, zero);
-        if((angleNum>0 && angleNum<=90))
+        /// 发送相关信息，显示当前的数据情况
+        int iii;
+        int jjj;
+        iii=outerCircleID;
+        jjj=angleLine1ID;
+        if(innerCircle!=-2)
         {
-            painter.drawText(int(writePos.x()+3), int(writePos.y()), angleText);
+            emit sigCurrentData(originUnitData[iii][jjj]);
         }
-        if (angleNum>90 && angleNum<=180)
+        if(innerCircle==-2)
         {
-            painter.drawText(int(writePos.x()), int(writePos.y()+15), angleText);
+            emit sigCurrentData(-2);
         }
-        if (angleNum>180 && angleNum<=270)
+        //    qDebug()<<circleNumber<<angleLineNumber;(10,16)
+        //        qDebug()<<"circle:: "<<innerCircleID<<outerCircleID;  //inner(1~9) outer(0~9)  使用outerCircleID
+        //    qDebug()<<"angleLine:: "<<angleLine1ID<<angleLine2ID;  //正常，请使用angleLine1ID(0~15)  angleLine2ID(1~16)
+        /// 如果鼠标不在范围内应该是不显示的
+        if(innerCircle!=-2)
         {
-            painter.drawText(int(writePos.x()-27), int(writePos.y()+15), angleText);  //适当调整
+            paintCurrentUnit(&painter);  //由于不显示，所以无法在此函数中发送出界信息
         }
-        if (angleNum>270 && angleNum<=360)
-        {
-            painter.drawText(int(writePos.x()-30), int(writePos.y()), angleText);
-        }
-    }
-
-    /// 发送相关信息，显示当前的数据情况
-    int iii;
-    int jjj;
-    iii=outerCircleID;
-    jjj=angleLine1ID;
-    if(innerCircle!=-2)
-    {
-        emit sigCurrentData(originUnitData[iii][jjj]);
-    }
-    if(innerCircle==-2)
-    {
-        emit sigCurrentData(-2);
-    }
-    //    qDebug()<<circleNumber<<angleLineNumber;(10,16)
-    //        qDebug()<<"circle:: "<<innerCircleID<<outerCircleID;  //inner(1~9) outer(0~9)  使用outerCircleID
-    //    qDebug()<<"angleLine:: "<<angleLine1ID<<angleLine2ID;  //正常，请使用angleLine1ID(0~15)  angleLine2ID(1~16)
-    /// 如果鼠标不在范围内应该是不显示的
-    if(innerCircle!=-2)
-    {
-        paintCurrentUnit(&painter);  //由于不显示，所以无法在此函数中发送出界信息
     }
 }
 
@@ -450,152 +458,155 @@ void QJDRose::resizeEvent(QResizeEvent *)
 {
     /// 此处不做处理，在主界面进行统一处理
     // 考虑与其他widget进行同步，主界面放弃教育
-//    int roseWid=width();
-//    int roseHei=height();
-//    if(roseWid<roseHei)
-//    {
-//        roseHei=roseWid;
-//    }
-//    if(roseHei<roseWid)
-//    {
-//        roseWid=roseHei;
-//    }
-//    emit sigWidgetSize(roseWid,roseHei);     //发送长宽，用于resize其他控件，其余的不用写在resizeEvent中，单单resize就可以了
-//    resize(roseWid,roseHei);
+    //    int roseWid=width();
+    //    int roseHei=height();
+    //    if(roseWid<roseHei)
+    //    {
+    //        roseHei=roseWid;
+    //    }
+    //    if(roseHei<roseWid)
+    //    {
+    //        roseWid=roseHei;
+    //    }
+    //    emit sigWidgetSize(roseWid,roseHei);     //发送长宽，用于resize其他控件，其余的不用写在resizeEvent中，单单resize就可以了
+    //    resize(roseWid,roseHei);
 }
 
 
 void QJDRose::mouseMoveEvent(QMouseEvent *event)
 {
-    mouseX=event->pos().x();
-    mouseY=event->pos().y();
-    emit sigCurrentMousePosX(event->pos().x());
-    emit sigCurrentMousePosY(event->pos().y());
+    if(isStarted==true)
+    {
+        mouseX=event->pos().x();
+        mouseY=event->pos().y();
+        emit sigCurrentMousePosX(event->pos().x());
+        emit sigCurrentMousePosY(event->pos().y());
 
-    /// ----------还能根据鼠标当前的位置确定鼠标处于哪圈与哪圈的中间，然后将圈圈画出----------///
-    mouseRadius=sqrt((mouseX-circleMiddle.x())*(mouseX-circleMiddle.x())
-                     +(mouseY-circleMiddle.y())*(mouseY-circleMiddle.y()));
-    // 超出范围则不显示,very good
-    if(mouseRadius>maxRadius)
-    {
-        innerCircle=-2;
-    }
-    for(int i=0;i<radiusData.size()-1;i++)
-    {
-        if(mouseRadius<radiusData[i] && mouseRadius>radiusData[i+1])
+        /// ----------还能根据鼠标当前的位置确定鼠标处于哪圈与哪圈的中间，然后将圈圈画出----------///
+        mouseRadius=sqrt((mouseX-circleMiddle.x())*(mouseX-circleMiddle.x())
+                         +(mouseY-circleMiddle.y())*(mouseY-circleMiddle.y()));
+        // 超出范围则不显示,very good
+        if(mouseRadius>maxRadius)
         {
-            // 记录i和i+1的数据，然后画出来
-            outerCircle=radiusData[i];
-            innerCircle=radiusData[i+1];
-            outerCircleID=i;
-            innerCircleID=i+1;
+            innerCircle=-2;
         }
-    }
-    //圆心部分
-    if(mouseRadius<minRadius)
-    {
-        outerCircle=minRadius;
-        outerCircleID=minRadiusID;
-        innerCircle=-1;
-    }
+        for(int i=0;i<radiusData.size()-1;i++)
+        {
+            if(mouseRadius<radiusData[i] && mouseRadius>radiusData[i+1])
+            {
+                // 记录i和i+1的数据，然后画出来
+                outerCircle=radiusData[i];
+                innerCircle=radiusData[i+1];
+                outerCircleID=i;
+                innerCircleID=i+1;
+            }
+        }
+        //圆心部分
+        if(mouseRadius<minRadius)
+        {
+            outerCircle=minRadius;
+            outerCircleID=minRadiusID;
+            innerCircle=-1;
+        }
 
-    /// ----------------------判断mouse 是在哪两条斜线的中间-------------------- ///
-    // 此处做的太过冗余，考虑精简
-    int temp=angleLineNumber/4;
-    int temp1;
-    int temp2;
-    bool is1=false;
-    bool is2=false;
-    bool is3=false;
-    bool is4=false;
-    if(mouseX>circleMiddle.x() && mouseY<circleMiddle.y())
-    {
-        temp1=0;
-        temp2=temp;
-        is1=true;
-    }
-    if(mouseX>circleMiddle.x() && mouseY>circleMiddle.y())
-    {
-        temp1=temp;
-        temp2=temp*2;
-        is2=true;
-    }
-    if(mouseX<circleMiddle.x() && mouseY>circleMiddle.y())
-    {
-        temp1=temp*2;
-        temp2=temp*3;
-        is3=true;
-    }
-    if(mouseX<circleMiddle.x() && mouseY<circleMiddle.y())
-    {
-        temp1=temp*3;
-        temp2=temp*4;
-        is4=true;
-    }
-    float mouseK;
-    mouseK=(mouseY-circleMiddle.y())/(mouseX-circleMiddle.x());
-    //    qDebug()<<"mouseK:: "<<mouseK;
+        /// ----------------------判断mouse 是在哪两条斜线的中间-------------------- ///
+        // 此处做的太过冗余，考虑精简
+        int temp=angleLineNumber/4;
+        int temp1;
+        int temp2;
+        bool is1=false;
+        bool is2=false;
+        bool is3=false;
+        bool is4=false;
+        if(mouseX>circleMiddle.x() && mouseY<circleMiddle.y())
+        {
+            temp1=0;
+            temp2=temp;
+            is1=true;
+        }
+        if(mouseX>circleMiddle.x() && mouseY>circleMiddle.y())
+        {
+            temp1=temp;
+            temp2=temp*2;
+            is2=true;
+        }
+        if(mouseX<circleMiddle.x() && mouseY>circleMiddle.y())
+        {
+            temp1=temp*2;
+            temp2=temp*3;
+            is3=true;
+        }
+        if(mouseX<circleMiddle.x() && mouseY<circleMiddle.y())
+        {
+            temp1=temp*3;
+            temp2=temp*4;
+            is4=true;
+        }
+        float mouseK;
+        mouseK=(mouseY-circleMiddle.y())/(mouseX-circleMiddle.x());
+        //    qDebug()<<"mouseK:: "<<mouseK;
 
-    /// 完全分开处理
-    if(is1==true)
-    {
-        for(int i=temp1+1;i<=temp2;i++)
+        /// 完全分开处理
+        if(is1==true)
         {
-            if(mouseK<angleLineK[i])
+            for(int i=temp1+1;i<=temp2;i++)
             {
-                angleLine1=i-1;
-                angleLine2=i;
-                angleLine1ID=i-1;
-                angleLine2ID=i;
-                break;
+                if(mouseK<angleLineK[i])
+                {
+                    angleLine1=i-1;
+                    angleLine2=i;
+                    angleLine1ID=i-1;
+                    angleLine2ID=i;
+                    break;
+                }
             }
         }
-    }
-    if(is2==true)
-    {
-        for(int i=temp1+1;i<=temp2;i++)
+        if(is2==true)
         {
-            if(mouseK<angleLineK[i])
+            for(int i=temp1+1;i<=temp2;i++)
             {
-                angleLine1=i-1;
-                angleLine2=i;
-                angleLine1ID=i-1;
-                angleLine2ID=i;
-                break;
+                if(mouseK<angleLineK[i])
+                {
+                    angleLine1=i-1;
+                    angleLine2=i;
+                    angleLine1ID=i-1;
+                    angleLine2ID=i;
+                    break;
+                }
             }
         }
-    }
-    if(is3==true)
-    {
-        for(int i=temp1+1;i<=temp2;i++)
+        if(is3==true)
         {
-            if(mouseK<angleLineK[i])
+            for(int i=temp1+1;i<=temp2;i++)
             {
-                angleLine1=i-1;
-                angleLine2=i;
-                angleLine1ID=i-1;
-                angleLine2ID=i;
-                break;
+                if(mouseK<angleLineK[i])
+                {
+                    angleLine1=i-1;
+                    angleLine2=i;
+                    angleLine1ID=i-1;
+                    angleLine2ID=i;
+                    break;
+                }
             }
         }
-    }
-    if(is4==true)
-    {
-        // 真的要想办法在最后加一个斜率
-        for(int i=temp1+1;i<=temp2;i++)
+        if(is4==true)
         {
-            //qDebug()<<i<<":: "<<angleLineK[i];
-            if(mouseK<angleLineK[i])
+            // 真的要想办法在最后加一个斜率
+            for(int i=temp1+1;i<=temp2;i++)
             {
-                angleLine1=i-1;
-                angleLine2=i;
-                angleLine1ID=i-1;
-                angleLine2ID=i;
-                break;
+                //qDebug()<<i<<":: "<<angleLineK[i];
+                if(mouseK<angleLineK[i])
+                {
+                    angleLine1=i-1;
+                    angleLine2=i;
+                    angleLine1ID=i-1;
+                    angleLine2ID=i;
+                    break;
+                }
             }
         }
+        update();  //don`t forget this
     }
-    update();  //don`t forget this
 }
 
 /// 获取当前鼠标的数据
