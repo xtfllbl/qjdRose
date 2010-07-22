@@ -7,8 +7,9 @@
 //#define ANGLE 16   //azimuth
 
 /// TODO:
-/// 1.数据改变网格之后显示有问题
 /// 2.实验窗口缩小的方法。。。
+/// 3.成像错误
+/// 4.圆形角度轴需要重绘
 QJDRose::QJDRose(QWidget *)
 {
     //    setOffsetUnit(30);   //无法让外部来得及调用
@@ -71,6 +72,10 @@ void QJDRose::setOaData()
         {
             maxAzimuth=oa.azimuth;
         }
+//        if(oa.azimuth<60 && oa.azimuth>50  && oa.offset>1500)
+//        {
+//            qDebug()<<oa.azimuth<<oa.offset;
+//        }
     }
     qDebug()<<"rose ::"<<minOffset<<maxOffset;
     file.close();
@@ -104,17 +109,17 @@ void QJDRose::setData()
     {
         // 减去最小值，除以网格长度，就能得到所处网格了
         gridX=int(ceil((offsetData[i]-minOffset)/offsetUnitLength)-1);
-        if(gridX>circleNumber)   //直接被害死，值定死害死人阿
+        if(gridX>circleNumber)
             gridX=circleNumber;
         if(gridX<0)
             gridX=0;
-        gridY=int(ceil((azimuthData[i]-minAzimuth)/azimuthUnitLength)-1);
+        gridY=int(ceil((azimuthData[i]-minAzimuth)/azimuthUnitLength)-1);  //此网格落的有问题
         if(gridY>angleLineNumber)
             gridY=angleLineNumber;
         if(gridY<0)
             gridY=0;
 
-        originUnitData[gridX][gridY]++;
+        originUnitData[circleNumber-gridX-1][gridY]++;  //为什么改的是x却会有改变，检查作图方法
     }
 
     /// --------------找到转换后数字的最大---------- ///
@@ -151,66 +156,6 @@ void QJDRose::setData()
         //        qDebug()<<"origin:: "<<i<<originUnitData[i];
         //        qDebug()<<"color:: "<<i<<colorUnitData[i];
         //        qDebug()<<"cutNum:: "<<cutNum<<"~~~~~~~~~";
-    }
-}
-
-// 废弃状态
-void QJDRose::setData2()
-{
-    /// 输入原始数据
-    circleNumber=10;
-    angleLineNumber=16;
-
-    originData.resize(circleNumber*angleLineNumber);
-    for(int i=0;i<originData.size();i++)
-    {
-        int ir = qrand()%100000;  //十万以内随机数
-        originData[i]=ir;
-    }
-    /// 转换至色表区间
-    maxNum=0;
-    minNum=100000;
-    cutNum=0;
-    for(int i=0;i<originData.size();i++)
-    {
-        if(originData[i]>maxNum)
-        {
-            maxNum=originData[i];
-        }
-        if(originData[i]<minNum)
-        {
-            minNum=originData[i];
-        }
-    }
-    //    qDebug()<<"emit"<<minNum<<maxNum;
-    emit sigGetRange(minNum,maxNum);  //发出信号，让colorTable类能接受到,比connect还要早
-
-    cutNum=int(  ceil( (maxNum-minNum)/255.0 )  );
-    for(int i=0;i<originData.size();i++)
-    {
-        convetData<<int(floor(originData[i]*1.0/(cutNum+1)));   //此数不得大于255，否则程序崩溃
-    }
-
-    /// 转换至二维数组用于提取数据,必须与显示的二维数组同步
-    // 此数组用于鼠标移动时显示相关的数据
-    originDataDouble.resize(circleNumber);
-    for(int i=0;i<circleNumber;i++)
-    {
-        originDataDouble[i].resize(angleLineNumber);
-        for(int j=0;j<angleLineNumber;j++)
-        {
-            originDataDouble[i][j]=originData[j+angleLineNumber*i];
-        }
-    }
-    /// 转换至二维数组用于显示
-    colorData.resize(circleNumber);
-    for(int i=0;i<circleNumber;i++)
-    {
-        colorData[i].resize(angleLineNumber);
-        for(int j=0;j<angleLineNumber;j++)
-        {
-            colorData[i][j]=convetData[j+angleLineNumber*i];  //转化成二维
-        }
     }
 }
 
@@ -295,14 +240,15 @@ void QJDRose::paintEvent(QPaintEvent *)
         }
         /// 基本框架
         // 半径为长宽最小值的一半
-        QPen pen;
-        pen.setColor(Qt::black);
-        painter.setPen(pen);
+        //x,y皱去掉，影响美观
+//        QPen pen;
+//        pen.setColor(Qt::black);
+//        painter.setPen(pen);
 
-        painter.drawLine(offset-more,radius+offset,
-                         radius*2+offset+more,radius+offset);
-        painter.drawLine(radius+offset,offset-more,
-                         radius+offset,radius*2+offset+more);
+//        painter.drawLine(offset-more,radius+offset,
+//                         radius*2+offset+more,radius+offset);
+//        painter.drawLine(radius+offset,offset-more,
+//                         radius+offset,radius*2+offset+more);
 
         /// 一圈圈
         for(int i=0; i<rUnitNum; i++)
@@ -331,42 +277,8 @@ void QJDRose::paintEvent(QPaintEvent *)
             angleLineK[i]=k;
         }
         angleLineK<<1000;  // 在最后加上无穷大，以便判断
-        /// 写角度
-        QString angleText;
-        QPointF writePos;
-        /// 应当从90度开始写
-        for(int i=0;i<angleLineNumber;i++)
-        {
-            double x=radius*cos(PAI/2+kUnit*i);
-            double y=radius*sin(PAI/2+kUnit*i);
-            x=-x;
-            y=-y;
 
-            float angleNum=360*1.0/angleLineNumber*i;  //先准确计算，然后模糊显示
-            int showNum=int(angleNum);
-            angleText=QString::number(showNum);
-            writePos.setX(radius+offset+x);
-            writePos.setY(radius+offset+y);
-
-            QString zero="0";
-            painter.drawText(radius+offset+2, offset-2, zero);
-            if((angleNum>0 && angleNum<=90))
-            {
-                painter.drawText(int(writePos.x()+3), int(writePos.y()), angleText);
-            }
-            if (angleNum>90 && angleNum<=180)
-            {
-                painter.drawText(int(writePos.x()), int(writePos.y()+15), angleText);
-            }
-            if (angleNum>180 && angleNum<=270)
-            {
-                painter.drawText(int(writePos.x()-27), int(writePos.y()+15), angleText);  //适当调整
-            }
-            if (angleNum>270 && angleNum<=360)
-            {
-                painter.drawText(int(writePos.x()-30), int(writePos.y()), angleText);
-            }
-        }
+        paintAngle(&painter);
 
         /// 发送相关信息，显示当前的数据情况
         int iii;
@@ -621,44 +533,6 @@ void QJDRose::getCurrentPosData()
 /// 高亮当前鼠标滑过的模块
 void QJDRose::paintCurrentUnit(QPainter *painter)
 {
-    /// 现在是判断出所在斜线和圆弧区间内
-    //    QPen pen1;
-    //    pen1.setColor(Qt::white);
-    //    pen1.setWidth(3);
-    //    painter->setPen(pen1);
-    //    painter->drawEllipse(circleMiddle,outerCircle,outerCircle);
-    //    if(innerCircle!=0)
-    //    {
-    //        painter->drawEllipse(circleMiddle,innerCircle,innerCircle);
-    //    }
-    //    if(innerCircle==0)
-    //    {
-    //        painter->drawPoint(circleMiddle);
-    //    }
-    //    painter->drawLine(int(radius+offset), int(radius+offset),
-    //                     int(radius+offset-radius*cos(PAI/2+kUnit*angleLine1)), int(radius+offset-radius*sin(PAI/2+kUnit*angleLine1)));
-    //    painter->drawLine(int(radius+offset), int(radius+offset),
-    //                     int(radius+offset-radius*cos(PAI/2+kUnit*angleLine2)), int(radius+offset-radius*sin(PAI/2+kUnit*angleLine2)));
-
-
-    // 显示所在处的两段线段
-    //    painter->drawLine(int(radius+offset-innerCircle*cos(PAI/2+kUnit*angleLine1)), int(radius+offset-innerCircle*sin(PAI/2+kUnit*angleLine1)),
-    //                      int(radius+offset-outerCircle*cos(PAI/2+kUnit*angleLine1)), int(radius+offset-outerCircle*sin(PAI/2+kUnit*angleLine1)));
-    //    painter->drawLine(int(radius+offset-innerCircle*cos(PAI/2+kUnit*angleLine2)), int(radius+offset-innerCircle*sin(PAI/2+kUnit*angleLine2)),
-    //                      int(radius+offset-outerCircle*cos(PAI/2+kUnit*angleLine2)), int(radius+offset-outerCircle*sin(PAI/2+kUnit*angleLine2)));
-
-    /// 显示所在处的两段弧
-    // drawArc无法完成任务
-    //void QPainter::drawArc( int x, int y, int width, int height, int startAngle, int spanAngle )
-    //outerCircle, angleLine1
-    //    painter->drawArc( int(offset+rUnit*outerCircleID), int(offset+rUnit*outerCircleID),
-    //                      int((radius -rUnit*outerCircleID)*2), int((radius -rUnit*outerCircleID)*2),
-    //                      int(angleLine1ID*turnAngleDegree+90), int(turnAngleDegree) );   /// still not right
-    //innerCircle, angleLine2
-    //    painter->drawArc( int(offset+rUnit*innerCircleID), int(offset+rUnit*innerCircleID),
-    //                      int((radius -rUnit*innerCircleID)*2), int((radius -rUnit*innerCircleID)*2),
-    //                      int(angleLine2ID*turnAngleDegree+90), int(turnAngleDegree));
-
     /// 将所在空间单独显示出来
     QPen pen2;
     pen2.setColor(Qt::white);
@@ -710,6 +584,37 @@ void QJDRose::paintCurrentUnit(QPainter *painter)
         path3.lineTo(circleMiddle.x(),circleMiddle.y());
 
         painter->drawPath(path3);
+    }
+}
+
+void QJDRose::paintAngle(QPainter *painter)
+{
+    /// 写角度,此处需要重新写
+    // 先在远处画一个圆然后计算回来云云
+    // 整体定位感觉稍好
+//    painter->drawEllipse(circleMiddle,radius+30,radius+30);  //用来定位的圆圈
+    QString angleText;
+    QPointF writePos;
+    for(int i=0;i<angleLineNumber;i++)
+    {
+        double x=(radius+15)*cos(PAI/2+kUnit*i);
+        double y=(radius+15)*sin(PAI/2+kUnit*i);
+        x=-x;
+        y=-y;
+
+        float angleNum=360*1.0/angleLineNumber*i;  //先准确计算，然后模糊显示
+        int showNum=int(angleNum);
+        angleText=QString::number(showNum);
+        writePos.setX(radius+offset+x);
+        writePos.setY(radius+offset+y);
+        if(i==0)
+        {
+            painter->drawText(int(writePos.x())-3, int(writePos.y())+5, "0");
+        }
+        if(i!=0)
+        {
+            painter->drawText(int(writePos.x()-12), int(writePos.y()+5), angleText);
+        }
     }
 }
 

@@ -79,6 +79,8 @@ private:
 
     void paintEvent(QPaintEvent *);
     void paintCurrentUnit(QPainter *painter);
+    void paintAngle(QPainter *painter);
+
     void resizeEvent(QResizeEvent *);
     void mouseMoveEvent(QMouseEvent *);
     void setColorTable();
