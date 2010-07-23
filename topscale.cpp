@@ -29,11 +29,11 @@ void topScale::paintEvent(QPaintEvent *)
     int num;
     for(int i=-3;i<4;i++)
     {
-        if(i<3)
+        if(i<0)
         {
             num=int(i*offsetUnit-minOffset);
         }
-        if(i>=3)
+        if(i>=0)
         {
             num=int(i*offsetUnit+minOffset);
         }

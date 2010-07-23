@@ -15,7 +15,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     rose=new QJDRose();
     //    rose->setPalette(Qt::white);  //仍然无用
-    rose->setOffsetUnit(15);
+    rose->setOffsetUnit(20);
     rose->setAzimuthUnit(36);
     rose->start();
 
@@ -87,6 +87,7 @@ void MainWindow::showData(int data)
     }
 }
 
+/// 缩小
 void MainWindow::on_actionZoomOut_triggered()
 {
     int roseWid=rose->width();
@@ -106,6 +107,7 @@ void MainWindow::on_actionZoomOut_triggered()
     }
 }
 
+/// 放大
 void MainWindow::on_actionZoomIn_triggered()
 {
     int roseWid=rose->width();
@@ -120,5 +122,4 @@ void MainWindow::on_actionZoomIn_triggered()
     int nowHei=height();
 //    resize(nowWid-roseWid+saveLen+50,nowHei-roseHei+saveLen+50);
     setFixedSize(nowWid-roseWid+saveLen+50,nowHei-roseHei+saveLen+50);
-
 }

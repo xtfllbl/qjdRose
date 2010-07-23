@@ -72,7 +72,8 @@ void QJDRose::setOaData()
         {
             maxAzimuth=oa.azimuth;
         }
-//        if(oa.azimuth<60 && oa.azimuth>50  && oa.offset>1500)
+        // 最好鼠标移动能显示当前网格偏移距范围
+//        if(oa.azimuth<190 && oa.azimuth>180  && oa.offset>4500)
 //        {
 //            qDebug()<<oa.azimuth<<oa.offset;
 //        }
@@ -109,11 +110,12 @@ void QJDRose::setData()
     {
         // 减去最小值，除以网格长度，就能得到所处网格了
         gridX=int(ceil((offsetData[i]-minOffset)/offsetUnitLength)-1);
+        gridY=int(ceil((azimuthData[i]-minAzimuth)/azimuthUnitLength)-1);  //此网格落的有问题
+        // 不加限定网格会溢出
         if(gridX>circleNumber)
             gridX=circleNumber;
         if(gridX<0)
             gridX=0;
-        gridY=int(ceil((azimuthData[i]-minAzimuth)/azimuthUnitLength)-1);  //此网格落的有问题
         if(gridY>angleLineNumber)
             gridY=angleLineNumber;
         if(gridY<0)
@@ -182,11 +184,11 @@ void QJDRose::paintEvent(QPaintEvent *)
             length=width();
         }
 
-        offset=length/8;  //偏移
-        radius=int((length/4)*1.5);  //  三分之四左右差不多，不至于太多空洞感
-        kUnit=(2*PAI/angleLineNumber);  //整个圆除以需要分割的数量，得到每根斜线需要旋转的斜率
-        rUnit=radius*1.0/circleNumber;  //必须使用浮点，否则不准确
-        int rUnitNum=int(radius/rUnit+1);  //加上最外圈,最外圈不再单独画
+        offset=length/8;
+        radius=int((length/4)*1.5);
+        kUnit=(2*PAI/angleLineNumber);
+        rUnit=radius*1.0/circleNumber;
+        int rUnitNum=int(radius/rUnit+1);
 
         emit sigGetLength(radius,offset);  /// 发送相关信息,还不如直接给半径来的直接
         emit sigSetOffset(minOffset,maxOffset);
@@ -237,17 +239,6 @@ void QJDRose::paintEvent(QPaintEvent *)
                 painter.fillPath(toFillPath,brush);
             }
         }
-        /// 基本框架
-        // 半径为长宽最小值的一半
-        //x,y皱去掉，影响美观
-//        QPen pen;
-//        pen.setColor(Qt::black);
-//        painter.setPen(pen);
-
-//        painter.drawLine(offset-more,radius+offset,
-//                         radius*2+offset+more,radius+offset);
-//        painter.drawLine(radius+offset,offset-more,
-//                         radius+offset,radius*2+offset+more);
 
         /// 一圈圈
         for(int i=0; i<rUnitNum; i++)
@@ -367,25 +358,11 @@ void QJDRose::emitRange()
 
 void QJDRose::resizeEvent(QResizeEvent *)
 {
-    /// 此处不做处理，在主界面进行统一处理
-    // 考虑与其他widget进行同步，主界面放弃教育
-    //    int roseWid=width();
-    //    int roseHei=height();
-    //    if(roseWid<roseHei)
-    //    {
-    //        roseHei=roseWid;
-    //    }
-    //    if(roseHei<roseWid)
-    //    {
-    //        roseWid=roseHei;
-    //    }
-    //    emit sigWidgetSize(roseWid,roseHei);     //发送长宽，用于resize其他控件，其余的不用写在resizeEvent中，单单resize就可以了
-    //    resize(roseWid,roseHei);
 }
-
 
 void QJDRose::mouseMoveEvent(QMouseEvent *event)
 {
+    // 鼠标移动事件，触发后还要重绘，影响了一定的系统效率
     if(isStarted==true)
     {
         mouseX=event->pos().x();
@@ -429,6 +406,7 @@ void QJDRose::mouseMoveEvent(QMouseEvent *event)
         bool is2=false;
         bool is3=false;
         bool is4=false;
+        // 象限判断
         if(mouseX>circleMiddle.x() && mouseY<circleMiddle.y())
         {
             temp1=0;
@@ -502,7 +480,6 @@ void QJDRose::mouseMoveEvent(QMouseEvent *event)
         }
         if(is4==true)
         {
-            // 真的要想办法在最后加一个斜率
             for(int i=temp1+1;i<=temp2;i++)
             {
                 //qDebug()<<i<<":: "<<angleLineK[i];
@@ -520,22 +497,13 @@ void QJDRose::mouseMoveEvent(QMouseEvent *event)
     }
 }
 
-/// 获取当前鼠标的数据
-void QJDRose::getCurrentPosData()
-{
-    // 由于是圆弧，所以不会非常准确
-    qDebug()<<"pointDataX:: "<<pointDataX<<"\n"
-            <<"pointDataY:: "<<pointDataY
-            <<"~~~~~~~~~~";
-}
-
 /// 高亮当前鼠标滑过的模块
 void QJDRose::paintCurrentUnit(QPainter *painter)
 {
     /// 将所在空间单独显示出来
     QPen pen2;
-    pen2.setColor(Qt::white);
-    pen2.setWidth(5);
+    pen2.setColor(qRgb(255,255,150));   //黄色
+    pen2.setWidth(3);
     painter->setPen(pen2);
 
     // innerCircle==-2  鼠标不在范围内
@@ -586,9 +554,10 @@ void QJDRose::paintCurrentUnit(QPainter *painter)
     }
 }
 
+/// 写上圆圈外的角度值
 void QJDRose::paintAngle(QPainter *painter)
 {
-    // 整体定位感觉稍好
+    // 整体定位
     //    painter->drawEllipse(circleMiddle,radius+30,radius+30);  //用来定位的圆圈
     QString angleText;
     QPointF writePos;

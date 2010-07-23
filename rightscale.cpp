@@ -17,7 +17,7 @@ void rightScale::paintEvent(QPaintEvent *)
     QPainter painter(this);
     painter.drawRect(0,0,width()-2,height()-2);
 
-     diameter=radius*2;   //使用float，最大限度减少误差
+    diameter=radius*2;   //使用float，最大限度减少误差
     painter.drawLine(5, offset, 5, int(diameter+offset));  // 对应圆圈的高度
 
     /// 刻度 & 坐标
@@ -29,13 +29,15 @@ void rightScale::paintEvent(QPaintEvent *)
     // 。。。真的有最小offset存在则坐标不能这样写了
     for(int i=-3;i<4;i++)
     {
-        if(i<3)
+        if(i<0)
         {
             num=int(i*offsetUnit-minOffset);
+//            qDebug()<<"<0::"<<num;
         }
-        if(i>=3)
+        if(i>=0)
         {
             num=int(i*offsetUnit+minOffset);
+//            qDebug()<<">0::"<<num;
         }
         offsetText<<QString::number(num);
     }

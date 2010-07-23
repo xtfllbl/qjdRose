@@ -10,7 +10,6 @@ class QJDRose:public QWidget
 public:
     QJDRose(QWidget *parent = 0);
     void emitRange();  //手动在connect完毕后发送信号
-    void getCurrentPosData();
     void setOffsetUnit(int);
     void setAzimuthUnit(int);
 private:
