@@ -39,6 +39,8 @@
    </attribute>
    <addaction name="actionZoomIn"/>
    <addaction name="actionZoomOut"/>
+   <addaction name="separator"/>
+   <addaction name="actionClose"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionZoomOut">
@@ -63,6 +65,15 @@
    </property>
    <property name="toolTip">
     <string>zoomIn</string>
+   </property>
+  </action>
+  <action name="actionClose">
+   <property name="icon">
+    <iconset resource="image.qrc">
+     <normaloff>:/image/image/application-exit.png</normaloff>:/image/image/application-exit.png</iconset>
+   </property>
+   <property name="text">
+    <string>close</string>
    </property>
   </action>
  </widget>

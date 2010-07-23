@@ -46,9 +46,9 @@ void topScale::paintEvent(QPaintEvent *)
         {
             painter.drawText(int(longLine*i+offset)-20, 25, offsetText[i]);
         }
-        if(i==3)
+        if(i==3)  //中间
         {
-            painter.drawText(int(longLine*i+offset)-20, 40,
+            painter.drawText(int(longLine*i+offset)-25, 25,
                              QString::number(minOffset)+"("+QString::number(-minOffset)+")");  //这个很难办,位置很难放
         }
     }

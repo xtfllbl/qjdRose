@@ -123,3 +123,8 @@ void MainWindow::on_actionZoomIn_triggered()
 //    resize(nowWid-roseWid+saveLen+50,nowHei-roseHei+saveLen+50);
     setFixedSize(nowWid-roseWid+saveLen+50,nowHei-roseHei+saveLen+50);
 }
+
+void MainWindow::on_actionClose_triggered()
+{
+    exit(0);
+}

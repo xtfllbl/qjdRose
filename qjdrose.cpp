@@ -42,7 +42,8 @@ void QJDRose::setOaData()
     fileSize=file.size();
     oaNum=(file.size()-200)/20;
     QDataStream in(&file);
-    in.setByteOrder(QDataStream::LittleEndian);   //使用readRawData时可无视
+    in.setVersion(QDataStream::Qt_4_5);  //! 异常重要，设置了可以避免很多问题
+    in.setByteOrder(QDataStream::LittleEndian);
     in.skipRawData(200);
 
     minOffset=100000;
@@ -52,7 +53,7 @@ void QJDRose::setOaData()
     /// 录入数据，兼顾求最大最小
     for(int i=0;i<oaNum;i++)
     {
-        in>>oa;  // warning::must use qt4.5, 高版本将会产生错误
+        in>>oa;  // warning::qdatastream must set to qt4.5
         offsetData<<oa.offset;
         azimuthData<<oa.azimuth;
 
@@ -73,12 +74,12 @@ void QJDRose::setOaData()
             maxAzimuth=oa.azimuth;
         }
         // 最好鼠标移动能显示当前网格偏移距范围
-//        if(oa.azimuth<190 && oa.azimuth>180  && oa.offset>4500)
-//        {
-//            qDebug()<<oa.azimuth<<oa.offset;
-//        }
+        //        if(oa.azimuth<190 && oa.azimuth>180  && oa.offset>4500)
+        //        {
+        //            qDebug()<<oa.azimuth<<oa.offset;
+        //        }
     }
-    qDebug()<<"rose ::"<<minOffset<<maxOffset;
+    qDebug()<<"rose :: minOff:"<<minOffset<<" maxOff:"<<maxOffset;
     file.close();
 }
 

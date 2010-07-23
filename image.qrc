@@ -2,5 +2,6 @@
     <qresource prefix="/image">
         <file>image/zoom-in.png</file>
         <file>image/zoom-out.png</file>
+        <file>image/application-exit.png</file>
     </qresource>
 </RCC>

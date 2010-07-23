@@ -36,6 +36,7 @@ private:
     void resizeEvent(QResizeEvent *);
     void mouseMoveEvent(QMouseEvent *);
 private slots:
+    void on_actionClose_triggered();
     void on_actionZoomIn_triggered();
     void on_actionZoomOut_triggered();
     void showData(int data);
