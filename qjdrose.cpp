@@ -183,8 +183,7 @@ void QJDRose::paintEvent(QPaintEvent *)
         }
 
         offset=length/8;  //偏移
-        int more=10;        //适当添加一些余量
-        radius=(length/4)*1.5;  //  三分之四左右差不多，不至于太多空洞感
+        radius=int((length/4)*1.5);  //  三分之四左右差不多，不至于太多空洞感
         kUnit=(2*PAI/angleLineNumber);  //整个圆除以需要分割的数量，得到每根斜线需要旋转的斜率
         rUnit=radius*1.0/circleNumber;  //必须使用浮点，否则不准确
         int rUnitNum=int(radius/rUnit+1);  //加上最外圈,最外圈不再单独画

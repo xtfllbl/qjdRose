@@ -29,11 +29,15 @@ private:
 
     int diffWid;
     int diffHei;
+    int savedWid;
+    int savedHei;
+    bool isSmaller;
     bool isRecorded;
     void resizeEvent(QResizeEvent *);
     void mouseMoveEvent(QMouseEvent *);
 private slots:
-    void on_actionResize_triggered();
+    void on_actionZoomIn_triggered();
+    void on_actionZoomOut_triggered();
     void showData(int data);
 };
 

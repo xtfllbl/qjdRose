@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>581</width>
+    <width>582</width>
     <height>453</height>
    </rect>
   </property>
@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Rose</string>
   </property>
   <widget class="QWidget" name="centralWidget"/>
   <widget class="QMenuBar" name="menuBar">
@@ -25,7 +25,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>581</width>
+     <width>582</width>
      <height>28</height>
     </rect>
    </property>
@@ -37,19 +37,38 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionResize"/>
+   <addaction name="actionZoomIn"/>
+   <addaction name="actionZoomOut"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
-  <action name="actionResize">
+  <action name="actionZoomOut">
+   <property name="icon">
+    <iconset resource="image.qrc">
+     <normaloff>:/image/image/zoom-out.png</normaloff>:/image/image/zoom-out.png</iconset>
+   </property>
    <property name="text">
-    <string>Resize</string>
+    <string>zoomOut</string>
    </property>
    <property name="toolTip">
-    <string>resize to normal size</string>
+    <string>zoomOut</string>
+   </property>
+  </action>
+  <action name="actionZoomIn">
+   <property name="icon">
+    <iconset resource="image.qrc">
+     <normaloff>:/image/image/zoom-in.png</normaloff>:/image/image/zoom-in.png</iconset>
+   </property>
+   <property name="text">
+    <string>zoomIn</string>
+   </property>
+   <property name="toolTip">
+    <string>zoomIn</string>
    </property>
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources/>
+ <resources>
+  <include location="image.qrc"/>
+ </resources>
  <connections/>
 </ui>

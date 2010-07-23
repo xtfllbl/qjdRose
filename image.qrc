@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/image">
+        <file>image/zoom-in.png</file>
+        <file>image/zoom-out.png</file>
+    </qresource>
+</RCC>

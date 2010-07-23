@@ -26,3 +26,6 @@ HEADERS  += mainwindow.h \
     qjdobservationattribute.h
 
 FORMS    += mainwindow.ui
+
+RESOURCES += \
+    image.qrc

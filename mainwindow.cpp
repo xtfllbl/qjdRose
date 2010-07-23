@@ -8,8 +8,13 @@ MainWindow::MainWindow(QWidget *parent) :
     isRecorded=false;
 
     ui->setupUi(this);
+    Qt::WindowFlags flags = 0;
+    flags = Qt::WindowMinimizeButtonHint | Qt::WindowCloseButtonHint;
+    setWindowFlags(flags); // 设置禁止最大化
+    setFixedSize(600,537);  //这样一来，手动进行放大缩小也不可以
+
     rose=new QJDRose();
-//    rose->setPalette(Qt::white);  //仍然无用
+    //    rose->setPalette(Qt::white);  //仍然无用
     rose->setOffsetUnit(15);
     rose->setAzimuthUnit(36);
     rose->start();
@@ -62,47 +67,12 @@ MainWindow::~MainWindow()
 
 void MainWindow::resizeEvent(QResizeEvent *)
 {
-    /// resize含有诸多问题，无法实现
-    /// 主要是不能小于总体尺寸，否则就会不给力。。。
-    int roseWid=rose->width();
-    int roseHei=rose->height();
-    // 非常纠结的比大小,如何既能放大，又能缩小呢
-    // 彻底纠结，有时超出屏幕会自动缩小到屏幕可视范围，有时候不会。。。
-    /// 需要解决不能缩小的问题。。。做一个按钮单独缩小？
-    if(roseWid<roseHei)  //应为小，所以取小的话永远不会放大。。。但是因为大，不取小，则永远不能缩小。。。必须要做取舍么？？？
-    {
-        roseWid=roseHei;
-    }
-    if(roseHei<roseWid)
-    {
-//        roseWid=roseHei;        //这里翻一番看看效果,不行，处于不能放大的状态
-        roseHei=roseWid;
-    }
-
-    /// 终于勉强实现了这一个效果，但是仍然存在着问题
-    // 在左右上下单方面拖拉缩小将会不起作用，需要斜向缩小才能实现，问题未知
-    if(isRecorded==false)
-    {
-        diffWid=width()-roseWid;  //只想记录一次，但是resize的第一次的值总是不正确的
-        diffHei=height()-roseHei;
-        if(diffWid>0 && diffHei>0)
-        {
-            isRecorded=true;
-        }
-        else
-        {
-            isRecorded=false;
-        }
-    }
-
-    //    qDebug()<<roseWid<<roseHei<<diffWid<<diffHei;
-    /// 没有任何变化，因为的确没有变化，需要一个固定数值
-    resize(diffWid+roseWid, diffHei+roseHei);
+    /// 通过手动放大缩小并且直接固定来控制大小。。。
 }
 
 void MainWindow::mouseMoveEvent(QMouseEvent */*event*/)
 {
-//        qDebug()<<mapFromGlobal(event->pos());
+    //        qDebug()<<mapFromGlobal(event->pos());
 }
 
 void MainWindow::showData(int data)
@@ -117,7 +87,38 @@ void MainWindow::showData(int data)
     }
 }
 
-void MainWindow::on_actionResize_triggered()
+void MainWindow::on_actionZoomOut_triggered()
 {
-    resize(480, 480);   //强行减至最小
+    int roseWid=rose->width();
+    int roseHei=rose->height();
+    int saveLen;
+    if(roseWid<roseHei)
+        saveLen=roseWid;
+    else
+        saveLen=roseHei;
+
+    int nowWid=width();
+    int nowHei=height();
+//    resize(nowWid-roseWid+saveLen-50,nowHei-roseHei+saveLen-50);
+    if(nowWid-roseWid+saveLen-50>=600 && nowHei-roseHei+saveLen-50>=537)
+    {
+        setFixedSize(nowWid-roseWid+saveLen-50,nowHei-roseHei+saveLen-50);
+    }
+}
+
+void MainWindow::on_actionZoomIn_triggered()
+{
+    int roseWid=rose->width();
+    int roseHei=rose->height();
+    int saveLen;
+    if(roseWid<roseHei)
+        saveLen=roseWid;
+    else
+        saveLen=roseHei;
+
+    int nowWid=width();
+    int nowHei=height();
+//    resize(nowWid-roseWid+saveLen+50,nowHei-roseHei+saveLen+50);
+    setFixedSize(nowWid-roseWid+saveLen+50,nowHei-roseHei+saveLen+50);
+
 }

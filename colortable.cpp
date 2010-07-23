@@ -32,7 +32,7 @@ void colorTable::paintEvent(QPaintEvent *)
     int colorValue;
     int wid=30;
     diameter=radius*2;
-    int hei=diameter;
+    int hei=int(diameter);
     QImage imageTable(wid,hei,QImage::Format_ARGB32);
     imageTable.setColorTable(cTable);    //将颜色表附上
 
