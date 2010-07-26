@@ -75,11 +75,7 @@ void topScale::setLength(int rad,int off)
 void topScale::setPosLine(int x)
 {
     // 注意不要超出范围
-    if(x>(diameter+offset))
-    {
-        mouseX=-1;
-    }
-    if(x<offset)
+    if(x==-2)
     {
         mouseX=-1;
     }
@@ -99,26 +95,6 @@ void topScale::paintPosLine(QPainter *painter)
     if(mouseX!=-1)
     {
         painter->drawLine(mouseX,5,mouseX,15);
-        int tempOffset;
-//        qDebug()<<"top:: "<<angle;
-        if(angle!=-2 )
-        {
-            if((angle>45 && angle<135)
-                || (angle>225 && angle<315))
-                {
-                if(mouseX>=offset && mouseX<=radius+offset)
-                {
-                    tempOffset=-(maxOffset-minOffset)*(radius-(mouseX-offset))/radius;
-                }
-                if(mouseX>=radius+offset && mouseX<=diameter+offset)
-                {
-                    tempOffset=(maxOffset-minOffset)*(mouseX-radius-offset)/radius;
-                }
-                emit sigCurrentOffset(tempOffset);
-//                qDebug()<<"top:: "<<tempNum;
-            }
-        }
-//        qDebug()<<tempNum;
     }
 }
 
@@ -133,10 +109,4 @@ void topScale::resizeWithCircle(int , int )
 {
 //    resize(wid,height());  //只需改变宽度
     /// 的确是更着走，但是界面不管，继续放大。。。。怎会如此无理
-}
-
-void topScale::setAngle(int ang)
-{
-    angle=ang;
-    update();
 }

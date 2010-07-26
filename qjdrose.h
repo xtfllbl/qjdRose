@@ -78,7 +78,7 @@ private:
     void setColorTable();
     void setData();
     void setOaData();
-    void setData2();
+    void setOffset(int angle);
 
 signals:
     void sigGetRange(int min,int max);

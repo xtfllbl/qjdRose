@@ -65,20 +65,14 @@ MainWindow::MainWindow(QWidget *parent) :
     // 链接鼠标
     connect(rose,SIGNAL(sigCurrentMousePosX(int)),tScale,SLOT(setPosLine(int)));  //有时会更新不及时
     connect(rose,SIGNAL(sigCurrentMousePosY(int)),rScale,SLOT(setPosLine(int)));
-    // 界面同步缩放  not needed ant more
-    //    connect(rose,SIGNAL(sigWidgetSize(int,int)),tScale,SLOT(resizeWithCircle(int,int)));
-    //    connect(rose,SIGNAL(sigWidgetSize(int,int)),rScale,SLOT(resizeWithCircle(int,int)));
-    //    connect(rose,SIGNAL(sigWidgetSize(int,int)),cTable,SLOT(resizeWithCircle(int,int)));
+
     rose->emitRange();  //链接之后发送信号
 
     // 链接显示数据
     // QPaintEngine::setSystemRect: Should not be changed while engine is active?????
     connect(rose,SIGNAL(sigCurrentFold(int)),this,SLOT(showFoldData(int)));
-    connect(rScale,SIGNAL(sigCurrentOffset(int)),this,SLOT(showOffsetData(int)));
-    connect(tScale,SIGNAL(sigCurrentOffset(int)),this,SLOT(showOffsetData(int)));
     connect(rose,SIGNAL(sigCurrentAzimuth(int)),this,SLOT(showAzimuthData(int)));
-    connect(rose,SIGNAL(sigCurrentAzimuth(int)),rScale,SLOT(setAngle(int)));
-    connect(rose,SIGNAL(sigCurrentAzimuth(int)),tScale,SLOT(setAngle(int)));
+    connect(rose,SIGNAL(sigCurrentOffset(int)),this,SLOT(showOffsetData(int)));
 
     QGridLayout *gLayout=new QGridLayout();
     gLayout->addWidget(tScale,0,2);
@@ -119,12 +113,26 @@ void MainWindow::showFoldData(int data)
 
 void MainWindow::showOffsetData(int data)
 {
-    statsLabelOffsetNum->setText(QString::number(data));
+    if(data!=-8000)
+    {
+        statsLabelOffsetNum->setText(QString::number(data));
+    }
+    if(data==-8000)
+    {
+        statsLabelOffsetNum->setText("Standby");
+    }
 }
 
 void MainWindow::showAzimuthData(int data)
 {
-    statsLabelAzimuthNum->setText(QString::number(data));
+    if(data!=-2)
+    {
+        statsLabelAzimuthNum->setText(QString::number(data));
+    }
+    if(data==-2)
+    {
+        statsLabelAzimuthNum->setText("Standby");
+    }
 }
 
 /// 缩小

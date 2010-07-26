@@ -21,14 +21,11 @@ private:
     void paintPosLine(QPainter *painter);
 
 signals:
-    void sigCurrentOffset(int off);
 public slots:
     void setLength(int rad,int off);
     void setPosLine(int x);
     void setOffset(float min,float max);
     void resizeWithCircle(int wid,int hei);
-    void setAngle(int ang);
-
 };
 
 #endif // TOPSCALE_H

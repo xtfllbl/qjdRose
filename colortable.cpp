@@ -46,39 +46,43 @@ void colorTable::paintEvent(QPaintEvent *)
     }
     /// 刻度
     int startPos=0;
-    if(maxNum>100000)  //这里将存在着一定空隙，不太美观
-    {
-        startPos=0;
-    }
-    if(maxNum>10000 && maxNum<100000)
-    {
-        startPos=10;
-    }
-    if(maxNum>1000 && maxNum<10000)
-    {
-        startPos=20;
-    }
-    if(maxNum>100 && maxNum<1000)
-    {
-        startPos=30;
-    }
-    if(maxNum<100)
-    {
-        startPos=40;
-    }
-
     int startHeight=offset;         //将色表定在中间位置
     painter.drawImage(60,startHeight,imageTable);  // 定起始位置，画上去
     painter.drawRect(60,startHeight,wid,hei);        // 包围  drawRect ( int x, int y, int width, int height )
-    for(int i=0;i<9;i++)
+    for(int i=0;i<=9;i++)
     {
-        painter.drawLine(60,startHeight+hei/9*i,70,startHeight+hei/9*i);
+        if(i<9)
+        {
+            painter.drawLine(60,startHeight+hei/9*i,70,startHeight+hei/9*i);  //画线
+        }
         int number=maxNum/9*i;
         QString text=QString::number(number);
+        if(number>100000)  //这里将存在着一定空隙，不太美观
+        {
+            startPos=0;
+        }
+        if(number>10000 && number<100000)
+        {
+            startPos=8;
+        }
+        if(number>1000 && number<10000)
+        {
+            startPos=16;
+        }
+        if(number>100 && number<1000)
+        {
+            startPos=24;
+        }
+        if(number<100)
+        {
+            startPos=32;
+        }
+        if(number<10)
+        {
+            startPos=40;
+        }
         painter.drawText(startPos,startHeight+hei/9*i+5,text);   // 依据数字的位数来改变刻度值的起始位置（想办法靠右）
     }
-    QString text=QString::number(maxNum);
-    painter.drawText(startPos,startHeight+hei,text);
 }
 
 

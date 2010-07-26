@@ -373,8 +373,6 @@ void QJDRose::resizeEvent(QResizeEvent *)
 void QJDRose::mouseMoveEvent(QMouseEvent *event)
 {
     // 鼠标移动事件，触发后还要重绘，影响了一定的系统效率
-    emit sigCurrentMousePosX(event->pos().x());  //虽说每次都会发，但总是会有遗漏的时候
-    emit sigCurrentMousePosY(event->pos().y());
 
     if(isStarted==true)
     {
@@ -384,6 +382,16 @@ void QJDRose::mouseMoveEvent(QMouseEvent *event)
         /// ----------还能根据鼠标当前的位置确定鼠标处于哪圈与哪圈的中间，然后将圈圈画出----------///
         mouseRadius=sqrt((mouseX-circleMiddle.x())*(mouseX-circleMiddle.x())
                          +(mouseY-circleMiddle.y())*(mouseY-circleMiddle.y()));
+        if(mouseRadius<=radius)
+        {
+            emit sigCurrentMousePosX(event->pos().x());
+            emit sigCurrentMousePosY(event->pos().y());
+        }
+        else
+        {
+            emit sigCurrentMousePosX(-2);
+            emit sigCurrentMousePosY(-2);
+        }
         // 超出范围则不显示,very good
         if(mouseRadius>maxRadius)
         {
@@ -419,7 +427,7 @@ void QJDRose::mouseMoveEvent(QMouseEvent *event)
         bool is4=false;
         // 象限判断
         int angle;  //角度计算
-        angle= acos ( (mouseX-circleMiddle.x())/mouseRadius) * 180.0 / PAI;
+        angle=int( acos ( (mouseX-circleMiddle.x())/mouseRadius) * 180.0 / PAI );
         if(mouseX>circleMiddle.x() && mouseY<circleMiddle.y())
         {
             temp1=0;
@@ -450,8 +458,17 @@ void QJDRose::mouseMoveEvent(QMouseEvent *event)
         }
         float mouseK;
         mouseK=(mouseY-circleMiddle.y())/(mouseX-circleMiddle.x());
-        emit sigCurrentAzimuth(angle);  //发送当前角度数据
-
+        if(mouseRadius<=radius)
+        {
+            emit sigCurrentAzimuth(angle);  //发送当前角度数据
+            /// 在这里直接计算offset算了，没必要链接过去
+            setOffset(angle);
+        }
+        else
+        {
+            emit sigCurrentAzimuth(-2);  //发送无效信息
+            emit sigCurrentOffset(-8000);
+        }
         /// 完全分开处理
         if(is1==true)
         {
@@ -609,4 +626,37 @@ void QJDRose::setOffsetUnit(int unit)
 void QJDRose::setAzimuthUnit(int unit)
 {
     angleLineNumber=unit;
+}
+
+void QJDRose::setOffset(int angle)
+{
+    int tempOffset;
+    int diameter=radius*2;
+    if((angle>=0 && angle<=45)
+        || (angle>=135 && angle<=225)
+        || (angle>=315 && angle<=360))
+        {
+        if(mouseY>=offset && mouseY<=radius+offset)
+        {
+            tempOffset=int(-(maxOffset-minOffset)*(radius-(mouseY-offset))/radius);
+        }
+        if(mouseY>=radius+offset && mouseY<=diameter+offset)
+        {
+            tempOffset=int((maxOffset-minOffset)*(mouseY-radius-offset)/radius);
+        }
+    }
+    if((angle>45 && angle<135)
+        || (angle>225 && angle<315))
+        {
+        if(mouseX>=offset && mouseX<=radius+offset)
+        {
+            tempOffset=int(-(maxOffset-minOffset)*(radius-(mouseX-offset))/radius);
+        }
+        if(mouseX>=radius+offset && mouseX<=diameter+offset)
+        {
+            tempOffset=int((maxOffset-minOffset)*(mouseX-radius-offset)/radius);
+        }
+    }
+
+    emit sigCurrentOffset(tempOffset);
 }
