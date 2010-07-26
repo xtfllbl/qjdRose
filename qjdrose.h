@@ -20,12 +20,8 @@ private:
     qreal turnAngleDegree;
 
     QVector<QRgb> colorTable;
-    QVector<qint64> originData;
-    QVector<int> convetData;
     QVector<QVector<int> > originUnitData;
     QVector<QVector<int> > colorUnitData;
-    QVector<QVector<qint64> > originDataDouble;
-    QVector<QVector<int> > colorData;
     // 记录所有点的位置,一个空间貌似还不够
     QVector<QVector<int> > pointDataX;
     QVector<QVector<int> > pointDataY;
@@ -45,8 +41,7 @@ private:
     int maxRadius;
     int maxRadiusID;
     QVector<float> angleLineK;  //这个不能为0，否则好多都为0了
-    int maxNum;
-    int minNum;
+
     int maxOriginUnit;
     int minOriginUnit;
     int cutNum;
@@ -58,8 +53,6 @@ private:
 
     int mouseX;
     int mouseY;
-    int missX;
-    int missY;
 //    QVector<int> nearX;
 //    QVector<int> nearY;
     QPointF circleMiddle;  //圆心
@@ -94,7 +87,9 @@ signals:
     void sigCurrentMousePos(int x,int y);
     void sigCurrentMousePosX(int x);
     void sigCurrentMousePosY(int y);
-    void sigCurrentData(int data);
+    void sigCurrentFold(int data);
+    void sigCurrentOffset(int data);
+    void sigCurrentAzimuth(int data);
     void sigWidgetSize(int wid,int hei);
 public slots:
     void start();

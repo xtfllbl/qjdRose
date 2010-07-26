@@ -18,16 +18,18 @@ public:
 
     int minOffset;
     int maxOffset;
+    int angle;
 private:
     void paintEvent(QPaintEvent *);
     void paintPosLine(QPainter *painter);
 signals:
-
+    void sigCurrentOffset(int off);
 public slots:
     void setLength(int rad,int off);
     void setPosLine(int y);
     void setOffset(float min, float max);
     void resizeWithCircle(int wid, int hei);
+    void setAngle(int ang);
 };
 
 #endif // QJDSCALE_H

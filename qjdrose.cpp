@@ -21,7 +21,8 @@ QJDRose::QJDRose(QWidget *)
     setColorTable();
     isStarted=false;
     setMinimumSize(400,400);
-    setMaximumSize(2000,2000);  //因为需要扩充，照顾layout
+//    setMaximumSize(2000,2000);  //因为需要扩充，照顾layout
+//    this->sizePolicy().setHeightForWidth(true);  //无用？ ,仅仅设置prefer值
 }
 
 void QJDRose::start()
@@ -42,7 +43,7 @@ void QJDRose::setOaData()
     fileSize=file.size();
     oaNum=(file.size()-200)/20;
     QDataStream in(&file);
-    in.setVersion(QDataStream::Qt_4_5);  //! 异常重要，设置了可以避免很多问题
+    in.setVersion(QDataStream::Qt_4_5);  //! 异常重要，必须设置
     in.setByteOrder(QDataStream::LittleEndian);
     in.skipRawData(200);
 
@@ -50,10 +51,12 @@ void QJDRose::setOaData()
     minAzimuth=100000;
     maxOffset=0;
     maxAzimuth=0;
+    offsetData.clear();
+    azimuthData.clear();
     /// 录入数据，兼顾求最大最小
     for(int i=0;i<oaNum;i++)
     {
-        in>>oa;  // warning::qdatastream must set to qt4.5
+        in>>oa;
         offsetData<<oa.offset;
         azimuthData<<oa.azimuth;
 
@@ -73,8 +76,7 @@ void QJDRose::setOaData()
         {
             maxAzimuth=oa.azimuth;
         }
-        // 最好鼠标移动能显示当前网格偏移距范围
-        //        if(oa.azimuth<190 && oa.azimuth>180  && oa.offset>4500)
+        //        if(oa.azimuth<190 && oa.azimuth>180  && oa.offset>4500)  //检查数据与实际的差异
         //        {
         //            qDebug()<<oa.azimuth<<oa.offset;
         //        }
@@ -85,6 +87,9 @@ void QJDRose::setOaData()
 
 void QJDRose::setData()
 {
+    originUnitData.clear();
+    colorUnitData.clear();
+
     originUnitData.resize(circleNumber);
     for(int i=0;i<circleNumber;i++)
         originUnitData[i].resize(angleLineNumber);
@@ -201,6 +206,10 @@ void QJDRose::paintEvent(QPaintEvent *)
         /// 从0度顺时针绘图,success
         /// 在此，需要把所有的坐标保存下来，用于鼠标操作
         turnAngleDegree=-360*1.0/angleLineNumber;     //顺时针
+        pointDataX.clear();
+        pointDataY.clear();
+        radiusData.clear();
+
         pointDataX.resize(circleNumber);
         pointDataY.resize(circleNumber);
         radiusData.resize(circleNumber);
@@ -278,11 +287,11 @@ void QJDRose::paintEvent(QPaintEvent *)
         jjj=angleLine1ID;
         if(innerCircle!=-2)
         {
-            emit sigCurrentData(originUnitData[iii][jjj]);
+            emit sigCurrentFold(originUnitData[iii][jjj]);
         }
         if(innerCircle==-2)
         {
-            emit sigCurrentData(-2);
+            emit sigCurrentFold(-2);
         }
         //    qDebug()<<circleNumber<<angleLineNumber;(10,16)
         //        qDebug()<<"circle:: "<<innerCircleID<<outerCircleID;  //inner(1~9) outer(0~9)  使用outerCircleID
@@ -364,12 +373,13 @@ void QJDRose::resizeEvent(QResizeEvent *)
 void QJDRose::mouseMoveEvent(QMouseEvent *event)
 {
     // 鼠标移动事件，触发后还要重绘，影响了一定的系统效率
+    emit sigCurrentMousePosX(event->pos().x());  //虽说每次都会发，但总是会有遗漏的时候
+    emit sigCurrentMousePosY(event->pos().y());
+
     if(isStarted==true)
     {
         mouseX=event->pos().x();
         mouseY=event->pos().y();
-        emit sigCurrentMousePosX(event->pos().x());
-        emit sigCurrentMousePosY(event->pos().y());
 
         /// ----------还能根据鼠标当前的位置确定鼠标处于哪圈与哪圈的中间，然后将圈圈画出----------///
         mouseRadius=sqrt((mouseX-circleMiddle.x())*(mouseX-circleMiddle.x())
@@ -408,33 +418,39 @@ void QJDRose::mouseMoveEvent(QMouseEvent *event)
         bool is3=false;
         bool is4=false;
         // 象限判断
+        int angle;  //角度计算
+        angle= acos ( (mouseX-circleMiddle.x())/mouseRadius) * 180.0 / PAI;
         if(mouseX>circleMiddle.x() && mouseY<circleMiddle.y())
         {
             temp1=0;
             temp2=temp;
             is1=true;
+            angle=90-angle;
         }
         if(mouseX>circleMiddle.x() && mouseY>circleMiddle.y())
         {
             temp1=temp;
             temp2=temp*2;
             is2=true;
+            angle=90+angle;
         }
         if(mouseX<circleMiddle.x() && mouseY>circleMiddle.y())
         {
             temp1=temp*2;
             temp2=temp*3;
             is3=true;
+            angle=90+angle;
         }
         if(mouseX<circleMiddle.x() && mouseY<circleMiddle.y())
         {
             temp1=temp*3;
             temp2=temp*4;
             is4=true;
+            angle=450-angle;
         }
         float mouseK;
         mouseK=(mouseY-circleMiddle.y())/(mouseX-circleMiddle.x());
-        //    qDebug()<<"mouseK:: "<<mouseK;
+        emit sigCurrentAzimuth(angle);  //发送当前角度数据
 
         /// 完全分开处理
         if(is1==true)

@@ -25,7 +25,12 @@ public:
     colorTable *cTable;
 private:
     Ui::MainWindow *ui;
-    QLabel *statsLabel1;
+    QLabel *statsLabelFold;
+    QLabel *statsLabelFoldNum;
+    QLabel *statsLabelOffset;
+    QLabel *statsLabelOffsetNum;
+    QLabel *statsLabelAzimuth;
+    QLabel *statsLabelAzimuthNum;
 
     int diffWid;
     int diffHei;
@@ -39,7 +44,9 @@ private slots:
     void on_actionClose_triggered();
     void on_actionZoomIn_triggered();
     void on_actionZoomOut_triggered();
-    void showData(int data);
+    void showFoldData(int data);
+    void showOffsetData(int data);
+    void showAzimuthData(int data);
 };
 
 #endif // MAINWINDOW_H

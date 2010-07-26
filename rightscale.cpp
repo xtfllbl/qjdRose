@@ -10,6 +10,7 @@ rightScale::rightScale(QWidget *parent) :
     offset=0;
     minOffset=0;
     maxOffset=0;
+    angle=-2;
 }
 
 void rightScale::paintEvent(QPaintEvent *)
@@ -64,7 +65,7 @@ void rightScale::paintEvent(QPaintEvent *)
         painter.drawLine(5, int(shortLine*i+offset), 7, int(shortLine*i+offset));
     }
 
-    paintPosLine(&painter);
+    paintPosLine(&painter);  //这个想办法控制一下？  画那个小红线
 }
 
 void rightScale::setLength(int rad,int off)
@@ -102,6 +103,29 @@ void rightScale::paintPosLine(QPainter *painter)
     if(mouseY!=-1)
     {
         painter->drawLine(5,mouseY,15,mouseY);
+        // 可以根据这个来判断偏移，但是需要角度信息，这里需要大于45度角的时候的信息
+        int tempOffset;
+
+//        qDebug()<<"right:: "<<angle;
+        if(angle!=-2)
+        {
+            if(  (angle>=0 && angle<=45)
+                || (angle>=135 && angle<=225)
+                || (angle>=315 && angle<=360))
+                {
+                if(mouseY>=offset && mouseY<=radius+offset)
+                {
+                    tempOffset=-(maxOffset-minOffset)*(radius-(mouseY-offset))/radius;
+                }
+                if(mouseY>=radius+offset && mouseY<=diameter+offset)
+                {
+                    tempOffset=(maxOffset-minOffset)*(mouseY-radius-offset)/radius;
+                }
+                emit sigCurrentOffset(tempOffset);
+//                qDebug()<<"right:: "<<tempNum;
+            }
+        }
+//        qDebug()<<tempNum;
     }
 }
 
@@ -115,4 +139,10 @@ void rightScale::setOffset(float min, float max)
 void rightScale::resizeWithCircle(int , int )
 {
 //    resize(width(),hei);  //只需改变宽度
+}
+
+void rightScale::setAngle(int ang)
+{
+    angle=ang;
+    update();
 }
