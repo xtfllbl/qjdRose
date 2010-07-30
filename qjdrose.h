@@ -12,6 +12,11 @@ public:
     void emitRange();  //手动在connect完毕后发送信号
     void setOffsetUnit(int);
     void setAzimuthUnit(int);
+
+    int outerCircle;
+    int outerCircleID;
+    int innerCircle;
+    int innerCircleID;
 private:
     QJDObservationAttribute oa;
     int radius;
@@ -58,10 +63,6 @@ private:
     QPointF circleMiddle;  //圆心
 
     double mouseRadius;
-    int outerCircle;
-    int outerCircleID;
-    int innerCircle;
-    int innerCircleID;
 
     int angleLine1;
     int angleLine1ID;
@@ -76,8 +77,7 @@ private:
     void resizeEvent(QResizeEvent *);
     void mouseMoveEvent(QMouseEvent *);
     void setColorTable();
-    void setData();
-    void setOaData();
+
     void setOffset(int angle);
 
 signals:
@@ -93,6 +93,8 @@ signals:
     void sigWidgetSize(int wid,int hei);
 public slots:
     void start();
+    void setData();
+    void setOaData();
 };
 
 #endif // QJDROSE_H

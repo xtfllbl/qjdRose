@@ -41,6 +41,7 @@
    <addaction name="actionZoomOut"/>
    <addaction name="separator"/>
    <addaction name="actionClose"/>
+   <addaction name="actionChangeUnitNum"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionZoomOut">
@@ -74,6 +75,11 @@
    </property>
    <property name="text">
     <string>close</string>
+   </property>
+  </action>
+  <action name="actionChangeUnitNum">
+   <property name="text">
+    <string>changeUnitNum</string>
    </property>
   </action>
  </widget>

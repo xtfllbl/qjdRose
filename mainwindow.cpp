@@ -6,6 +6,7 @@ MainWindow::MainWindow(QWidget *parent) :
         QMainWindow(parent),
         ui(new Ui::MainWindow)
 {
+    counter=0;
     isRecorded=false;
 
     ui->setupUi(this);
@@ -15,9 +16,10 @@ MainWindow::MainWindow(QWidget *parent) :
     setFixedSize(600,537);  //这样一来，手动进行放大缩小也不可以
 
     rose=new QJDRose();
-    //    rose->setPalette(Qt::white);  //仍然无用
-    rose->setOffsetUnit(20);
-    rose->setAzimuthUnit(36);
+    offsetUnit=20;
+    azimuthUnit=36;
+    rose->setOffsetUnit(offsetUnit);
+    rose->setAzimuthUnit(azimuthUnit);
     rose->start();
 
     cTable=new colorTable();
@@ -149,12 +151,15 @@ void MainWindow::on_actionZoomOut_triggered()
     int nowWid=width();
     int nowHei=height();
 //    resize(nowWid-roseWid+saveLen-50,nowHei-roseHei+saveLen-50);
+    // 不显示小红线
+    rScale->setPosLine(-2);
+    tScale->setPosLine(-2);
+    rose->innerCircle=-2;
     if(nowWid-roseWid+saveLen-50>=600 && nowHei-roseHei+saveLen-50>=537)  //不得小于最小值
     {
         setFixedSize(nowWid-roseWid+saveLen-50,nowHei-roseHei+saveLen-50);
     }
-    rScale->setPosLine(-1);  //不显示小红线
-    tScale->setPosLine(-1);
+
 }
 
 /// 放大
@@ -171,16 +176,32 @@ void MainWindow::on_actionZoomIn_triggered()
     int nowWid=width();
     int nowHei=height();
     //    resize(nowWid-roseWid+saveLen+50,nowHei-roseHei+saveLen+50);
+    rScale->setPosLine(-2);
+    tScale->setPosLine(-2);
+    rose->innerCircle=-2;
+
     if(nowWid-roseWid+saveLen+50<=qApp->desktop()->screenGeometry().width()
         && nowHei-roseHei+saveLen+50<=qApp->desktop()->screenGeometry().height())  //不大于分辨率
         {
         setFixedSize(nowWid-roseWid+saveLen+50,nowHei-roseHei+saveLen+50);
     }
-    rScale->setPosLine(-1);
-    tScale->setPosLine(-1);
 }
 
 void MainWindow::on_actionClose_triggered()
 {
     exit(0);
+}
+
+void MainWindow::on_actionChangeUnitNum_triggered()
+{
+    // just temp
+    counter++;
+    int plus=4;
+    offsetUnit=10+counter*plus;
+    azimuthUnit=12+counter*plus;
+    rose->setOffsetUnit(offsetUnit);
+    rose->setAzimuthUnit(azimuthUnit);
+    rose->setData();
+    rose->emitRange();  //改色表用
+    update();
 }

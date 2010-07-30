@@ -49,8 +49,15 @@ void topScale::paintEvent(QPaintEvent *)
         }
         if(i==3)  //中间
         {
-            painter.drawText(int(longLine*i+offset)-25, 25,
-                             QString::number(minOffset)+"("+QString::number(-minOffset)+")");  //这个很难办,位置很难放
+            if(minOffset!=0)
+            {
+                painter.drawText(int(longLine*i+offset)-25, 25,
+                                 QString::number(minOffset)+"("+QString::number(-minOffset)+")");  //这个很难办,位置很难放
+            }
+            if(minOffset==0)
+            {
+                painter.drawText(int(longLine*i+offset)-3, 25,"0");
+            }
         }
     }
     painter.drawLine(int(diameter+offset),5,int(diameter+offset),10);
@@ -90,11 +97,11 @@ void topScale::paintPosLine(QPainter *painter)
 {
     QPen pen;
     pen.setColor(Qt::red);
-    pen.setWidth(3);
+    pen.setWidth(2);
     painter->setPen(pen);
     if(mouseX!=-1)
     {
-        painter->drawLine(mouseX,5,mouseX,15);
+        painter->drawLine(mouseX,5,mouseX,20);
     }
 }
 

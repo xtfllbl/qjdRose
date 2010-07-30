@@ -31,6 +31,7 @@ private:
     QLabel *statsLabelOffsetNum;
     QLabel *statsLabelAzimuth;
     QLabel *statsLabelAzimuthNum;
+    QWidget *change;
 
     int diffWid;
     int diffHei;
@@ -38,9 +39,14 @@ private:
     int savedHei;
     bool isSmaller;
     bool isRecorded;
+    int offsetUnit;
+    int azimuthUnit;
+    int counter;
+
     void resizeEvent(QResizeEvent *);
     void mouseMoveEvent(QMouseEvent *);
 private slots:
+    void on_actionChangeUnitNum_triggered();
     void on_actionClose_triggered();
     void on_actionZoomIn_triggered();
     void on_actionZoomOut_triggered();

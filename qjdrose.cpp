@@ -109,7 +109,6 @@ void QJDRose::setData()
     float azimuthUnitLength;
     int gridX;
     int gridY;
-
     offsetUnitLength=(maxOffset-minOffset)/circleNumber;
     azimuthUnitLength=(maxAzimuth-minAzimuth)/angleLineNumber;
     for(int i=0;i<offsetData.size();i++)
@@ -148,7 +147,6 @@ void QJDRose::setData()
             }
         }
     }
-    //    emit sigGetRange(minOriginUnit,maxOriginUnit);  //发出信号，让colorTable类能接受到,比connect还要早
 
     cutNum=int(ceil(maxOriginUnit/255));
     for(int i=0;i<circleNumber;i++)
@@ -467,7 +465,7 @@ void QJDRose::mouseMoveEvent(QMouseEvent *event)
         else
         {
             emit sigCurrentAzimuth(-2);  //发送无效信息
-            emit sigCurrentOffset(-8000);
+            emit sigCurrentOffset(-8000);  //-2在偏移范围内，找个范围外的
         }
         /// 完全分开处理
         if(is1==true)
@@ -544,6 +542,10 @@ void QJDRose::paintCurrentUnit(QPainter *painter)
     // innerCircle==-1   鼠标在中心区域
     // innerCircle>=0    鼠标在常规网格区域
     /// 这是在有四个点的情况下
+    if(innerCircle==-2)
+    {
+        return;
+    }
     if(innerCircle!=-1 && innerCircle!=-2)
     {
         QPainterPath path1;
@@ -638,11 +640,11 @@ void QJDRose::setOffset(int angle)
         {
         if(mouseY>=offset && mouseY<=radius+offset)
         {
-            tempOffset=int(-(maxOffset-minOffset)*(radius-(mouseY-offset))/radius);
+            tempOffset=int(-(maxOffset-minOffset)*(radius-(mouseY-offset))/radius)-minOffset;
         }
         if(mouseY>=radius+offset && mouseY<=diameter+offset)
         {
-            tempOffset=int((maxOffset-minOffset)*(mouseY-radius-offset)/radius);
+            tempOffset=int((maxOffset-minOffset)*(mouseY-radius-offset)/radius)+minOffset;
         }
     }
     if((angle>45 && angle<135)
@@ -650,11 +652,11 @@ void QJDRose::setOffset(int angle)
         {
         if(mouseX>=offset && mouseX<=radius+offset)
         {
-            tempOffset=int(-(maxOffset-minOffset)*(radius-(mouseX-offset))/radius);
+            tempOffset=int(-(maxOffset-minOffset)*(radius-(mouseX-offset))/radius)-minOffset;
         }
         if(mouseX>=radius+offset && mouseX<=diameter+offset)
         {
-            tempOffset=int((maxOffset-minOffset)*(mouseX-radius-offset)/radius);
+            tempOffset=int((maxOffset-minOffset)*(mouseX-radius-offset)/radius)+minOffset;
         }
     }
 

@@ -52,8 +52,15 @@ void rightScale::paintEvent(QPaintEvent *)
         }
         if(i==3)
         {
-            painter.drawText(13, int(longLine*i+offset)+5,
-                             QString::number(minOffset)+"("+QString::number(-minOffset)+")");
+            if(minOffset!=0)
+            {
+                painter.drawText(13, int(longLine*i+offset)+5,
+                                 QString::number(minOffset)+"("+QString::number(-minOffset)+")");
+            }
+            if(minOffset==0)
+            {
+                painter.drawText(13, int(longLine*i+offset)+5,"0");
+            }
         }
     }
     painter.drawLine(5, int(diameter+offset), 10, int(diameter+offset));  //手动保证最后一条线
@@ -94,11 +101,11 @@ void rightScale::paintPosLine(QPainter *painter)
 {
     QPen pen;
     pen.setColor(Qt::red);
-    pen.setWidth(3);
+    pen.setWidth(2);
     painter->setPen(pen);
     if(mouseY!=-1)
     {
-        painter->drawLine(5,mouseY,15,mouseY);
+        painter->drawLine(5,mouseY,20,mouseY);
     }
 }
 
